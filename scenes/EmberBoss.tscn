@@ -1,0 +1,84 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/Boss.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 34.0
+
+[node name="EmberBoss" type="CharacterBody2D"]
+script = ExtResource("1")
+behavior_mode = "summoner"
+boss_name = "Ember Matron"
+max_hp = 13
+move_speed = 92.0
+detection_radius = 620.0
+preferred_distance = 230.0
+projectile_speed = 340.0
+projectile_count = 4
+projectile_spread_degrees = 30.0
+shoot_interval = 1.25
+ring_projectile_count = 7
+ring_interval = 2.5
+summon_interval = 3.1
+summon_count = 2
+summon_max_active = 3
+summon_minion_hp = 2
+summon_minion_speed = 92.0
+summon_minion_radius = 260.0
+saved_enemy_id = "boss_ember_fields_defeated"
+defeat_message = "The Ember Matron collapses and her swarm loses its heat."
+coin_reward = 6
+reward_power_id = "trail_haste"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="Halo" type="Polygon2D" parent="."]
+color = Color(1, 0.54, 0.18, 0.22)
+polygon = PackedVector2Array(0, -72, 50, -50, 72, 0, 50, 50, 0, 72, -50, 50, -72, 0, -50, -50)
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.86, 0.34, 0.12, 1)
+polygon = PackedVector2Array(0, -42, 28, -30, 40, 0, 30, 34, 0, 46, -30, 34, -40, 0, -28, -30)
+
+[node name="Mask" type="Polygon2D" parent="."]
+color = Color(0.36, 0.14, 0.08, 1)
+polygon = PackedVector2Array(-18, -8, 18, -8, 18, 18, -18, 18)
+
+[node name="EyeLeft" type="Polygon2D" parent="."]
+position = Vector2(-8, 0)
+color = Color(1, 0.84, 0.54, 1)
+polygon = PackedVector2Array(-3, -3, 3, -3, 3, 3, -3, 3)
+
+[node name="EyeRight" type="Polygon2D" parent="."]
+position = Vector2(8, 0)
+color = Color(1, 0.84, 0.54, 1)
+polygon = PackedVector2Array(-3, -3, 3, -3, 3, 3, -3, 3)
+
+[node name="CrownLeft" type="Polygon2D" parent="."]
+position = Vector2(-16, -36)
+color = Color(1, 0.72, 0.26, 1)
+polygon = PackedVector2Array(0, -18, 10, 14, -10, 14)
+
+[node name="CrownMid" type="Polygon2D" parent="."]
+position = Vector2(0, -44)
+color = Color(1, 0.78, 0.32, 1)
+polygon = PackedVector2Array(0, -22, 12, 16, -12, 16)
+
+[node name="CrownRight" type="Polygon2D" parent="."]
+position = Vector2(16, -36)
+color = Color(1, 0.72, 0.26, 1)
+polygon = PackedVector2Array(0, -18, 10, 14, -10, 14)
+
+[node name="HealthBar" type="Node2D" parent="."]
+position = Vector2(0, -68)
+
+[node name="Bg" type="Line2D" parent="HealthBar"]
+default_color = Color(0.12, 0.14, 0.16, 0.85)
+width = 8.0
+points = PackedVector2Array(-36, 0, 36, 0)
+
+[node name="Fill" type="Line2D" parent="HealthBar"]
+default_color = Color(1, 0.54, 0.18, 1)
+width = 6.0
+points = PackedVector2Array(-36, 0, 36, 0)

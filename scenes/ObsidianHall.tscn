@@ -1,0 +1,155 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/EmberBoss.tscn" id="7"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(690, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(320, 120)
+
+[node name="ObsidianHall" type="Node2D"]
+script = ExtResource("1")
+room_id = "obsidian_hall"
+room_name = "Obsidian Hall"
+navigation_hint = "This hard-tier hall punishes greedy movement with layered summons and pressure."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+scale = Vector2(2.05, 2.05)
+
+[node name="RoomTint" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.08, 0.08, 0.1, 0.56)
+polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
+
+[node name="RoomGlow" type="Polygon2D" parent="."]
+position = Vector2(0, -70)
+z_index = 2
+color = Color(0.86, 0.24, 0.18, 0.14)
+polygon = PackedVector2Array(0, -182, 136, -92, 190, 0, 136, 112, 0, 188, -136, 112, -190, 0, -136, -92)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+outer_extent = Vector2(700, 560)
+inner_extent = Vector2(635, 515)
+top_gap_width = 220.0
+top_gap_offset = 120.0
+bottom_gap_width = 220.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(120, -478)
+target_mode = "next_main"
+portal_color = Color(0.92, 0.3, 0.24, 1)
+glow_color = Color(0.92, 0.3, 0.24, 0.22)
+
+[node name="BerryPickup" parent="." instance=ExtResource("4")]
+position = Vector2(-198, 136)
+saved_flag = "berry_obsidian_hall_collected"
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-210, 72)
+max_hp = 5
+move_speed = 116.0
+detection_radius = 320.0
+saved_enemy_id = "enemy_obsidian_hall_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(186, 42)
+max_hp = 5
+move_speed = 120.0
+detection_radius = 330.0
+saved_enemy_id = "enemy_obsidian_hall_slime_b_defeated"
+coin_reward = 2
+
+[node name="SlimeC" parent="." instance=ExtResource("3")]
+position = Vector2(-20, 180)
+max_hp = 6
+move_speed = 124.0
+detection_radius = 340.0
+saved_enemy_id = "enemy_obsidian_hall_slime_c_defeated"
+coin_reward = 2
+
+[node name="Boss" parent="." instance=ExtResource("7")]
+position = Vector2(0, -98)
+boss_name = "Obsidian Broodmother"
+behavior_mode = "summoner"
+max_hp = 18
+move_speed = 102.0
+projectile_count = 5
+ring_projectile_count = 9
+summon_count = 2
+summon_max_active = 5
+summon_interval = 2.7
+saved_enemy_id = "boss_obsidian_hall_defeated"
+defeat_message = "The Obsidian Broodmother cracks apart and the hall opens."
+coin_reward = 8
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(120, -374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-290, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(410, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="CenterBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, 38)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CenterBlock"]
+shape = SubResource("3")

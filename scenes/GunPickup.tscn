@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/GunPickup.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pickup"]
+radius = 16.0
+
+[node name="GunPickup" type="Area2D"]
+script = ExtResource("1")
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pickup")
+disabled = true
+
+[node name="Shadow" type="Polygon2D" parent="."]
+position = Vector2(0, 10)
+color = Color(0.05, 0.07, 0.09, 0.25)
+polygon = PackedVector2Array(-18, 0, -10, -5, 10, -5, 18, 0, 10, 5, -10, 5)
+
+[node name="Grip" type="Polygon2D" parent="."]
+position = Vector2(-4, 3)
+rotation = 0.42
+color = Color(0.42, 0.24, 0.12, 1)
+polygon = PackedVector2Array(-4, -4, 4, -4, 5, 8, -5, 8)
+
+[node name="Body" type="Polygon2D" parent="."]
+position = Vector2(4, -4)
+color = Color(0.3, 0.34, 0.39, 1)
+polygon = PackedVector2Array(-12, -6, 8, -6, 12, 0, 8, 6, -12, 6)
+
+[node name="Barrel" type="Polygon2D" parent="."]
+position = Vector2(18, -4)
+color = Color(0.55, 0.6, 0.67, 1)
+polygon = PackedVector2Array(-6, -3, 12, -3, 12, 3, -6, 3)
+
+[node name="Shine" type="Polygon2D" parent="."]
+position = Vector2(4, -7)
+color = Color(0.92, 0.95, 1, 0.5)
+polygon = PackedVector2Array(-8, -2, 6, -2, 4, 1, -10, 1)

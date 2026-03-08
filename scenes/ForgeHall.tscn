@@ -1,0 +1,162 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="5"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(808, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(808, 40)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(270, 110)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(180, 120)
+
+[sub_resource type="RectangleShape2D" id="6"]
+size = Vector2(190, 120)
+
+[node name="ForgeHall" type="Node2D"]
+script = ExtResource("1")
+room_id = "forge_hall"
+room_name = "Forge Hall"
+navigation_hint = "Warm light, live metal, and visible portals. Clear the hall, then take the upper portal into the vault."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("5")
+scale = Vector2(2.05, 2.05)
+
+[node name="WarmTint" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.42, 0.2, 0.08, 0.18)
+polygon = PackedVector2Array(-980, -620, 980, -620, 980, 620, -980, 620)
+
+[node name="ForgeGlow" type="Polygon2D" parent="."]
+position = Vector2(0, 12)
+z_index = 2
+color = Color(1, 0.72, 0.34, 0.16)
+polygon = PackedVector2Array(0, -150, 140, -90, 220, 0, 140, 98, 0, 156, -140, 98, -220, 0, -140, -90)
+
+[node name="DoorLightTop" type="Polygon2D" parent="."]
+position = Vector2(0, -460)
+z_index = 2
+color = Color(0.6, 0.92, 1, 0.14)
+polygon = PackedVector2Array(-120, -40, 120, -40, 88, 68, -88, 68)
+
+[node name="DoorLightBottom" type="Polygon2D" parent="."]
+position = Vector2(0, 456)
+z_index = 2
+color = Color(1, 0.76, 0.38, 0.12)
+polygon = PackedVector2Array(-120, -50, 120, -50, 98, 70, -98, 70)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(980, 560)
+inner_extent = Vector2(918, 515)
+top_gap_width = 220.0
+bottom_gap_width = 220.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalVault" parent="." instance=ExtResource("2")]
+position = Vector2(0, -478)
+static_target_room_id = "arcane_vault"
+static_target_spawn_id = "spawn_from_hall"
+label_override = "Arcane Vault"
+portal_color = Color(0.58, 0.94, 1, 1)
+glow_color = Color(0.58, 0.94, 1, 0.22)
+
+[node name="PortalCity" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+static_target_room_id = "home_clearing"
+static_target_spawn_id = "spawn_from_forge"
+label_override = "Lantern City"
+portal_color = Color(1, 0.74, 0.34, 1)
+glow_color = Color(1, 0.74, 0.34, 0.2)
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-178, 104)
+max_hp = 3
+move_speed = 86.0
+detection_radius = 240.0
+saved_enemy_id = "enemy_forge_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(204, -118)
+max_hp = 3
+move_speed = 92.0
+detection_radius = 250.0
+saved_enemy_id = "enemy_forge_slime_b_defeated"
+coin_reward = 2
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_clearing" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 390)
+
+[node name="spawn_from_vault" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, -376)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("2")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("2")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("3")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("3")
+
+[node name="HallTable" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, 28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/HallTable"]
+shape = SubResource("4")
+
+[node name="LeftRoomFurniture" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-324, -110)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/LeftRoomFurniture"]
+shape = SubResource("5")
+
+[node name="RightRoomFurniture" type="StaticBody2D" parent="Colliders"]
+position = Vector2(332, -114)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/RightRoomFurniture"]
+shape = SubResource("6")

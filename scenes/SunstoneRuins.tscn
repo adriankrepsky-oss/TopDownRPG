@@ -1,0 +1,138 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/market_background.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/SunBoss.tscn" id="7"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(690, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(260, 100)
+
+[node name="SunstoneRuins" type="Node2D"]
+script = ExtResource("1")
+room_id = "sunstone_ruins"
+room_name = "Sunstone Ruins"
+navigation_hint = "Old roads and bright stone lead deeper. The upper portal advances the run."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+scale = Vector2(2.05, 2.05)
+
+[node name="SunWash" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(1, 0.82, 0.42, 0.18)
+polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
+
+[node name="CourtyardGlow" type="Polygon2D" parent="."]
+position = Vector2(20, -42)
+z_index = 2
+color = Color(1, 0.92, 0.42, 0.14)
+polygon = PackedVector2Array(0, -182, 136, -92, 190, 0, 136, 112, 0, 188, -136, 112, -190, 0, -136, -92)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+outer_extent = Vector2(700, 560)
+inner_extent = Vector2(635, 515)
+top_gap_width = 220.0
+top_gap_offset = 80.0
+bottom_gap_width = 220.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(80, -478)
+target_mode = "next_main"
+portal_color = Color(1, 0.72, 0.26, 1)
+glow_color = Color(1, 0.72, 0.26, 0.22)
+
+[node name="BerryPickup" parent="." instance=ExtResource("4")]
+position = Vector2(-210, 118)
+saved_flag = "berry_sunstone_ruins_collected"
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-188, 32)
+max_hp = 3
+move_speed = 88.0
+detection_radius = 240.0
+saved_enemy_id = "enemy_ruins_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(182, 42)
+max_hp = 3
+move_speed = 92.0
+detection_radius = 250.0
+saved_enemy_id = "enemy_ruins_slime_b_defeated"
+coin_reward = 2
+
+[node name="SunBoss" parent="." instance=ExtResource("7")]
+position = Vector2(20, -94)
+reward_power_id = "shock_ring"
+coin_reward = 5
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(80, -374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-290, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(410, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="CenterRuins" type="StaticBody2D" parent="Colliders"]
+position = Vector2(20, 26)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CenterRuins"]
+shape = SubResource("3")

@@ -1,0 +1,116 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/SkyBoss.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="5"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="6"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(808, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(280, 110)
+
+[node name="SkyKeep" type="Node2D"]
+script = ExtResource("1")
+room_id = "sky_keep"
+room_name = "Sky Keep"
+navigation_hint = "The final portal brought you above the clouds. This is the hardest room in the run."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+scale = Vector2(2.05, 2.05)
+
+[node name="StormTint" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.18, 0.24, 0.38, 0.52)
+polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
+
+[node name="AetherGlow" type="Polygon2D" parent="."]
+position = Vector2(0, -100)
+z_index = 2
+color = Color(0.66, 0.9, 1, 0.14)
+polygon = PackedVector2Array(0, -180, 140, -92, 196, 0, 140, 108, 0, 186, -140, 108, -196, 0, -140, -92)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("3")]
+outer_extent = Vector2(980, 560)
+inner_extent = Vector2(918, 515)
+bottom_gap_width = 220.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="SkyBoss" parent="." instance=ExtResource("4")]
+position = Vector2(0, -86)
+
+[node name="SlimeA" parent="." instance=ExtResource("5")]
+position = Vector2(-208, 88)
+max_hp = 5
+move_speed = 110.0
+detection_radius = 300.0
+saved_enemy_id = "enemy_sky_keep_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("5")]
+position = Vector2(220, 88)
+max_hp = 5
+move_speed = 110.0
+detection_radius = 300.0
+saved_enemy_id = "enemy_sky_keep_slime_b_defeated"
+coin_reward = 2
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="TableBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, 22)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/TableBlock"]
+shape = SubResource("3")

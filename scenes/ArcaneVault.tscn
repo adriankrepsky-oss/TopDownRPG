@@ -1,0 +1,160 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/CrystalBoss.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/RewardPedestal.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="6"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="7"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(808, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(190, 220)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(190, 220)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(220, 140)
+
+[node name="ArcaneVault" type="Node2D"]
+script = ExtResource("1")
+room_id = "arcane_vault"
+room_name = "Arcane Vault"
+navigation_hint = "The vault now reads like a real destination: defeat the warden, then claim the forge reward and take the lower portal back."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("7")
+scale = Vector2(2.05, 2.05)
+
+[node name="VaultTint" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.08, 0.18, 0.28, 0.5)
+polygon = PackedVector2Array(-980, -620, 980, -620, 980, 620, -980, 620)
+
+[node name="AetherGlow" type="Polygon2D" parent="."]
+position = Vector2(0, -40)
+z_index = 2
+color = Color(0.62, 0.94, 1, 0.14)
+polygon = PackedVector2Array(0, -230, 170, -120, 240, 0, 170, 126, 0, 228, -170, 126, -240, 0, -170, -120)
+
+[node name="CoreBeam" type="Polygon2D" parent="."]
+position = Vector2(0, 72)
+z_index = 2
+color = Color(0.64, 0.96, 1, 0.22)
+polygon = PackedVector2Array(-22, -240, 22, -240, 54, 80, -54, 80)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("6")]
+outer_extent = Vector2(980, 560)
+inner_extent = Vector2(918, 515)
+bottom_gap_width = 220.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalForge" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+static_target_room_id = "forge_hall"
+static_target_spawn_id = "spawn_from_vault"
+label_override = "Forge Hall"
+portal_color = Color(0.58, 0.94, 1, 1)
+glow_color = Color(0.58, 0.94, 1, 0.22)
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-140, 120)
+max_hp = 4
+move_speed = 102.0
+detection_radius = 260.0
+saved_enemy_id = "enemy_vault_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(140, -40)
+max_hp = 4
+move_speed = 106.0
+detection_radius = 280.0
+saved_enemy_id = "enemy_vault_slime_b_defeated"
+coin_reward = 2
+
+[node name="VaultBoss" parent="." instance=ExtResource("4")]
+position = Vector2(0, -140)
+behavior_mode = "orbit"
+boss_name = "Vault Warden"
+max_hp = 14
+move_speed = 104.0
+detection_radius = 680.0
+preferred_distance = 210.0
+projectile_speed = 380.0
+projectile_count = 5
+projectile_spread_degrees = 42.0
+shoot_interval = 1.0
+saved_enemy_id = "boss_arcane_vault_defeated"
+defeat_message = "The Vault Warden breaks apart. The forge core is yours."
+coin_reward = 6
+
+[node name="RewardPedestal" parent="." instance=ExtResource("5")]
+position = Vector2(0, 170)
+required_flag = "boss_arcane_vault_defeated"
+reward_flag = "arc_blaster_claimed"
+reward_item_id = "arc_blaster"
+reward_message = "Received Arc Blaster."
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_hall" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 390)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="PillarLeftBody" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-320, -80)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/PillarLeftBody"]
+shape = SubResource("3")
+
+[node name="PillarRightBody" type="StaticBody2D" parent="Colliders"]
+position = Vector2(320, 80)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/PillarRightBody"]
+shape = SubResource("4")
+
+[node name="CoreBaseBody" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, 260)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CoreBaseBody"]
+shape = SubResource("5")

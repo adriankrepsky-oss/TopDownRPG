@@ -1,0 +1,140 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/bloom_background.png" id="6"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(690, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(360, 420)
+
+[node name="BloomMarsh" type="Node2D"]
+script = ExtResource("1")
+room_id = "bloom_marsh"
+room_name = "Bloom Marsh"
+navigation_hint = "The marsh is dense and wet. Stay on the raised road and keep moving."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+scale = Vector2(2.05, 2.05)
+
+[node name="Mist" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.72, 0.9, 0.78, 0.08)
+polygon = PackedVector2Array(-700, -180, -420, -260, -40, -240, 320, -180, 700, -120, 700, 140, 320, 220, -40, 210, -420, 160, -700, 70)
+
+[node name="MarshGlow" type="Polygon2D" parent="."]
+position = Vector2(-280, -70)
+z_index = 1
+color = Color(0.74, 0.96, 0.82, 0.12)
+polygon = PackedVector2Array(-140, -180, -40, -220, 80, -200, 160, -120, 170, 18, 120, 132, 40, 188, -70, 196, -160, 136, -190, 16, -180, -96)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+outer_extent = Vector2(700, 560)
+inner_extent = Vector2(635, 515)
+top_gap_width = 220.0
+top_gap_offset = 130.0
+bottom_gap_width = 220.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(130, -478)
+target_mode = "next_main"
+portal_color = Color(0.52, 1, 0.66, 1)
+glow_color = Color(0.52, 1, 0.66, 0.22)
+
+[node name="BerryPickup" parent="." instance=ExtResource("4")]
+position = Vector2(-64, 92)
+saved_flag = "berry_bloom_marsh_collected"
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-58, 54)
+max_hp = 3
+move_speed = 88.0
+detection_radius = 240.0
+saved_enemy_id = "enemy_bloom_marsh_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(110, -46)
+max_hp = 3
+move_speed = 90.0
+detection_radius = 250.0
+saved_enemy_id = "enemy_bloom_marsh_slime_b_defeated"
+coin_reward = 2
+
+[node name="SlimeC" parent="." instance=ExtResource("3")]
+position = Vector2(-208, -132)
+max_hp = 4
+move_speed = 96.0
+detection_radius = 260.0
+saved_enemy_id = "enemy_bloom_marsh_slime_c_defeated"
+coin_reward = 2
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(130, -374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-290, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(410, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="LakeBody" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-290, -40)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/LakeBody"]
+shape = SubResource("3")

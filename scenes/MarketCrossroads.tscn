@@ -1,0 +1,138 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ShopStand.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/market_background.png" id="5"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(690, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[node name="MarketCrossroads" type="Node2D"]
+script = ExtResource("1")
+room_id = "market_crossroads"
+room_name = "Crossroads Bazaar"
+navigation_hint = "Portal lanes split the city. Buy what you need before the harder rooms begin."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("5")
+scale = Vector2(2.05, 2.05)
+
+[node name="WarmWash" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(1, 0.88, 0.54, 0.08)
+polygon = PackedVector2Array(-700, -520, -260, -420, 120, -360, 520, -400, 700, -520, 700, -620, -700, -620)
+
+[node name="SquareGlow" type="Polygon2D" parent="."]
+position = Vector2(0, 30)
+z_index = 1
+color = Color(0.8, 0.92, 1, 0.12)
+polygon = PackedVector2Array(0, -120, 90, -64, 130, 0, 90, 70, 0, 126, -90, 70, -130, 0, -90, -64)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(700, 560)
+inner_extent = Vector2(635, 515)
+top_gap_width = 220.0
+top_gap_offset = 120.0
+bottom_gap_width = 220.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(120, -478)
+target_mode = "next_main"
+portal_color = Color(0.88, 0.42, 1, 1)
+glow_color = Color(0.88, 0.42, 1, 0.22)
+
+[node name="PortalForge" parent="." instance=ExtResource("2")]
+position = Vector2(-188, -386)
+static_target_room_id = "forge_hall"
+static_target_spawn_id = "spawn_from_clearing"
+label_override = "Forge Route"
+portal_color = Color(1, 0.7, 0.3, 1)
+glow_color = Color(1, 0.7, 0.3, 0.2)
+
+[node name="HealerStand" parent="." instance=ExtResource("3")]
+position = Vector2(-210, 26)
+prompt_text = "Buy heal"
+speaker_name = "Field Medic"
+cost = 3
+heal_amount = 3
+success_message = "Health restored."
+
+[node name="RepeaterStand" parent="." instance=ExtResource("3")]
+position = Vector2(0, 14)
+prompt_text = "Buy repeater"
+speaker_name = "Gunsmith"
+item_id = "iron_repeater"
+cost = 6
+unique_purchase = true
+sold_out_flag = "shop_repeater_bought"
+success_message = "Bought Iron Repeater."
+
+[node name="SunLanceStand" parent="." instance=ExtResource("3")]
+position = Vector2(210, 26)
+prompt_text = "Buy sun lance"
+speaker_name = "Relic Broker"
+item_id = "sun_lance"
+cost = 10
+unique_purchase = true
+sold_out_flag = "shop_sun_lance_bought"
+success_message = "Bought Sun Lance."
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(120, -374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-290, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(410, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(350, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(635, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")

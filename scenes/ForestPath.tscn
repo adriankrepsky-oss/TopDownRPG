@@ -1,0 +1,168 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/GunPickup.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="7"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forest_background.png" id="8"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(700, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1130)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(430, 560)
+
+[sub_resource type="CircleShape2D" id="4"]
+radius = 34.0
+
+[node name="ForestPath" type="Node2D"]
+script = ExtResource("1")
+room_id = "forest_path"
+room_name = "Lakeside Quarter"
+navigation_hint = "The first combat district is larger now. Clear the slime, talk to the ranger, then take the upper portal."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("8")
+scale = Vector2(2.2, 2.2)
+
+[node name="LakeSheen" type="Polygon2D" parent="."]
+position = Vector2(-280, -78)
+z_index = 1
+color = Color(0.86, 0.96, 1, 0.14)
+polygon = PackedVector2Array(-160, -180, -54, -214, 86, -192, 174, -128, 194, -30, 162, 86, 86, 178, -32, 208, -130, 152, -188, 54, -192, -74)
+
+[node name="CampGlow" type="Polygon2D" parent="."]
+position = Vector2(-156, -470)
+z_index = 1
+color = Color(1, 0.74, 0.34, 0.16)
+polygon = PackedVector2Array(0, -96, 84, -54, 118, 0, 84, 60, 0, 110, -84, 60, -118, 0, -84, -54)
+
+[node name="QuarterPlaza" type="Polygon2D" parent="."]
+position = Vector2(248, 118)
+z_index = 1
+color = Color(0.82, 0.74, 0.6, 0.16)
+polygon = PackedVector2Array(-180, -120, 180, -120, 210, 120, -210, 120)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("7")]
+outer_extent = Vector2(690, 620)
+inner_extent = Vector2(630, 566)
+top_gap_width = 220.0
+top_gap_offset = 136.0
+bottom_gap_width = 220.0
+bottom_gap_offset = 120.0
+fill_color = Color(0.01, 0.01, 0.02, 0.8)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(120, 536)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(136, -536)
+target_mode = "next_main"
+portal_color = Color(0.52, 1, 0.66, 1)
+glow_color = Color(0.52, 1, 0.66, 0.22)
+
+[node name="BerryPickup" parent="." instance=ExtResource("4")]
+position = Vector2(-54, 94)
+saved_flag = "berry_forest_path_collected"
+
+[node name="Slime" parent="." instance=ExtResource("3")]
+position = Vector2(108, 18)
+max_hp = 3
+move_speed = 84.0
+detection_radius = 220.0
+saved_enemy_id = "enemy_forest_slime_defeated"
+coin_reward = 2
+
+[node name="GunPickup" parent="." instance=ExtResource("6")]
+position = Vector2(108, 18)
+saved_flag = "slime_blaster_collected"
+appear_flag = "enemy_forest_slime_defeated"
+pickup_message = "Picked up the Slime Blaster. Aim with the mouse and shoot with left click."
+
+[node name="Ranger" type="Node2D" parent="."]
+position = Vector2(-126, -392)
+
+[node name="Body" type="Polygon2D" parent="Ranger"]
+position = Vector2(0, 16)
+color = Color(0.28, 0.42, 0.72, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
+
+[node name="Head" type="Polygon2D" parent="Ranger"]
+position = Vector2(0, -18)
+color = Color(0.96, 0.82, 0.68, 1)
+polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
+
+[node name="Interactable" type="Area2D" parent="Ranger"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Ranger"
+dialogue_lines = PackedStringArray("You made it through the quarter.", "Take this Forest Token. The city portals will now stay open for you.")
+repeat_dialogue_lines = PackedStringArray("Stay near the campfire if you need a moment.", "The upper portal advances the run.")
+one_time_flag = "npc_forest_ranger_rewarded"
+reward_item_id = "forest_token"
+reward_message = "Received Forest Token."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ranger/Interactable"]
+shape = SubResource("4")
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(120, 426)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(136, -426)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-214, -566)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(486, -566)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-230, 566)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(470, 566)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-630, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(630, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="LakeBody" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-282, -76)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/LakeBody"]
+shape = SubResource("3")

@@ -1,0 +1,142 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/StormBoss.tscn" id="7"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(808, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(340, 120)
+
+[node name="StormSanctum" type="Node2D"]
+script = ExtResource("1")
+room_id = "storm_sanctum"
+room_name = "Storm Sanctum"
+navigation_hint = "Lightning gathers in the chamber. One more portal waits beyond this fight."
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+scale = Vector2(2.05, 2.05)
+
+[node name="StormTint" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.12, 0.18, 0.34, 0.58)
+polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
+
+[node name="LightningWash" type="Polygon2D" parent="."]
+position = Vector2(0, -80)
+z_index = 2
+color = Color(0.72, 0.9, 1, 0.16)
+polygon = PackedVector2Array(0, -192, 142, -100, 198, 0, 142, 118, 0, 196, -142, 118, -198, 0, -142, -100)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+outer_extent = Vector2(980, 560)
+inner_extent = Vector2(918, 515)
+top_gap_width = 220.0
+bottom_gap_width = 220.0
+fill_color = Color(0.01, 0.01, 0.02, 0.82)
+line_color = Color(0.11, 0.12, 0.16, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+target_mode = "previous_main"
+portal_color = Color(0.44, 0.84, 1, 1)
+glow_color = Color(0.44, 0.84, 1, 0.22)
+
+[node name="PortalForward" parent="." instance=ExtResource("2")]
+position = Vector2(0, -478)
+target_mode = "next_main"
+portal_color = Color(0.78, 0.9, 1, 1)
+glow_color = Color(0.78, 0.9, 1, 0.22)
+
+[node name="BerryPickup" parent="." instance=ExtResource("4")]
+position = Vector2(-230, 140)
+saved_flag = "berry_storm_sanctum_collected"
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-220, 92)
+max_hp = 4
+move_speed = 106.0
+detection_radius = 290.0
+saved_enemy_id = "enemy_storm_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(228, 86)
+max_hp = 4
+move_speed = 108.0
+detection_radius = 300.0
+saved_enemy_id = "enemy_storm_slime_b_defeated"
+coin_reward = 2
+
+[node name="SlimeC" parent="." instance=ExtResource("3")]
+position = Vector2(0, 178)
+max_hp = 4
+move_speed = 110.0
+detection_radius = 300.0
+saved_enemy_id = "enemy_storm_slime_c_defeated"
+coin_reward = 2
+
+[node name="StormBoss" parent="." instance=ExtResource("7")]
+position = Vector2(0, -92)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 374)
+
+[node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, -374)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(514, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(918, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")
+
+[node name="CenterBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, 28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CenterBlock"]
+shape = SubResource("3")
