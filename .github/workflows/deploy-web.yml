@@ -131,6 +131,13 @@ jobs:
               sed -i 's/godot\./index./g' index.html
             fi
 
+            # Replace Godot template placeholders
+            sed -i 's|\$GODOT_PROJECT_NAME|TopDownRPG|g' index.html
+            sed -i 's|\$GODOT_HEAD_INCLUDE||g' index.html
+            sed -i 's|\$GODOT_URL|index|g' index.html
+            sed -i 's|\$GODOT_ARGS|[]|g' index.html
+            sed -i 's|\$GODOT_CONFIG|{"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{},"focusCanvas":true,"gdextensionLibs":[]}|g' index.html
+
             echo "Manual assembly complete"
           else
             echo "ERROR: Could not create pack file"
