@@ -35,8 +35,6 @@ jobs:
           mkdir -p ~/.local/share/godot/export_templates/4.6.1.stable
           unzip -q templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/4.6.1.stable/
-          echo "Templates installed:"
-          ls ~/.local/share/godot/export_templates/4.6.1.stable/ | head -20
 
       - name: Setup export preset
         run: |
@@ -80,10 +78,7 @@ jobs:
           progressive_web_app/icon_180x180=""
           progressive_web_app/background_color=Color(0, 0, 0, 1)
           PRESET
-          # Remove leading whitespace from heredoc
           sed -i 's/^          //' export_presets.cfg
-          echo "--- export_presets.cfg ---"
-          cat export_presets.cfg
 
       - name: Import project
         run: |
@@ -91,28 +86,63 @@ jobs:
           sleep 2
           godot --headless --import 2>&1 || true
 
-      - name: Export to Web
+      - name: Export to Web (manual assembly)
         run: |
           mkdir -p build/web
-          echo "Attempting debug export..."
-          godot --headless --verbose --export-debug "Web" build/web/index.html 2>&1 || {
-            echo "=== Debug export failed, trying release... ==="
-            godot --headless --verbose --export-release "Web" build/web/index.html 2>&1 || {
-              echo "=== Both exports failed ==="
-              echo "--- Checking templates ---"
-              ls -la ~/.local/share/godot/export_templates/4.6.1.stable/
-              echo "--- Checking project files ---"
-              cat export_presets.cfg
-              cat project.godot
-              exit 1
-            }
+          TEMPLATES=~/.local/share/godot/export_templates/4.6.1.stable
+
+          # Try normal export first
+          godot --headless --export-debug "Web" build/web/index.html 2>&1 && exit 0 || true
+
+          echo "=== Standard export failed, using manual pack + template assembly ==="
+
+          # Export just the pack file (this works even when full export fails)
+          godot --headless --export-pack "Web" build/web/index.pck 2>&1 || {
+            echo "Pack export also failed, trying alternative..."
+            # Create pack directly
+            godot --headless --export-pack "Web" build/web/index.pck 2>&1 || true
           }
+
+          # If pack exists, manually assemble web export from templates
+          if [ -f build/web/index.pck ]; then
+            echo "Pack file created, assembling web build from templates..."
+            cd build/web
+
+            # Use nothreads debug template (most compatible, no SharedArrayBuffer needed)
+            unzip -o "$TEMPLATES/web_nothreads_debug.zip" -d .
+
+            # Rename template files to match our project
+            if [ -f godot.editor.html ]; then
+              mv godot.editor.html index.html
+            elif [ -f godot.html ]; then
+              mv godot.html index.html
+            fi
+
+            # Rename all godot.* files to index.*
+            for f in godot.*; do
+              if [ -f "$f" ]; then
+                ext="${f#godot}"
+                mv "$f" "index${ext}"
+              fi
+            done
+
+            # Update HTML to reference index instead of godot
+            if [ -f index.html ]; then
+              sed -i 's/godot\./index./g' index.html
+            fi
+
+            echo "Manual assembly complete"
+          else
+            echo "ERROR: Could not create pack file"
+            exit 1
+          fi
 
       - name: Verify export
         run: |
           echo "Build output:"
           ls -la build/web/
           test -f build/web/index.html || exit 1
+          test -f build/web/index.pck || exit 1
 
       - name: Add coi-serviceworker
         run: |
