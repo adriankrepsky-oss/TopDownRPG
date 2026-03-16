@@ -16,33 +16,109 @@ concurrency:
 
 jobs:
   export-web:
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.6.1
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup export templates
+      - name: Install Godot
         run: |
-          mkdir -p /root/.local/share/godot/export_templates/4.6.1.stable
-          mv /root/.local/share/godot/export_templates/4.6.1.stable/ /root/.local/share/godot/export_templates/4.6.1.stable_bak/ 2>/dev/null || true
-          cp -r /root/.local/share/godot/templates/4.6.1.stable/ /root/.local/share/godot/export_templates/4.6.1.stable/ 2>/dev/null || true
-          ls /root/.local/share/godot/export_templates/4.6.1.stable/ 2>/dev/null || echo "Templates not found, will download"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wget unzip libfontconfig1
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip -O godot.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.6.1-stable_linux.x86_64
+          sudo mv Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Install export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz -O templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.6.1.stable
+          unzip -q templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/4.6.1.stable/
+          echo "Templates installed:"
+          ls ~/.local/share/godot/export_templates/4.6.1.stable/ | head -20
+
+      - name: Setup export preset
+        run: |
+          cat > export_presets.cfg << 'PRESET'
+          [preset.0]
+
+          name="Web"
+          platform="Web"
+          runnable=true
+          dedicated_server=false
+          custom_features=""
+          export_filter="all_resources"
+          include_filter=""
+          exclude_filter=""
+          export_path="build/web/index.html"
+          encryption_include_filters=""
+          encryption_exclude_filters=""
+          encrypt_pck=false
+          encrypt_directory=false
+          script_export_mode=2
+
+          [preset.0.options]
+
+          custom_template/debug=""
+          custom_template/release=""
+          variant/extensions_support=false
+          variant/thread_support=false
+          vram_texture_compression/for_desktop=true
+          vram_texture_compression/for_mobile=true
+          html/export_icon=true
+          html/custom_html_shell=""
+          html/head_include=""
+          html/canvas_resize_policy=2
+          html/focus_canvas_on_start=true
+          html/experimental_virtual_keyboard=true
+          progressive_web_app/enabled=false
+          progressive_web_app/offline_page=""
+          progressive_web_app/display=1
+          progressive_web_app/orientation=0
+          progressive_web_app/icon_144x144=""
+          progressive_web_app/icon_180x180=""
+          progressive_web_app/background_color=Color(0, 0, 0, 1)
+          PRESET
+          # Remove leading whitespace from heredoc
+          sed -i 's/^          //' export_presets.cfg
+          echo "--- export_presets.cfg ---"
+          cat export_presets.cfg
 
       - name: Import project
-        run: godot --headless --import 2>&1 || true
+        run: |
+          godot --headless --import 2>&1 || true
+          sleep 2
+          godot --headless --import 2>&1 || true
 
       - name: Export to Web
         run: |
           mkdir -p build/web
-          godot --headless --export-release "Web" build/web/index.html 2>&1
+          echo "Attempting debug export..."
+          godot --headless --verbose --export-debug "Web" build/web/index.html 2>&1 || {
+            echo "=== Debug export failed, trying release... ==="
+            godot --headless --verbose --export-release "Web" build/web/index.html 2>&1 || {
+              echo "=== Both exports failed ==="
+              echo "--- Checking templates ---"
+              ls -la ~/.local/share/godot/export_templates/4.6.1.stable/
+              echo "--- Checking project files ---"
+              cat export_presets.cfg
+              cat project.godot
+              exit 1
+            }
+          }
 
-      - name: Add coi-serviceworker for SharedArrayBuffer
+      - name: Verify export
+        run: |
+          echo "Build output:"
+          ls -la build/web/
+          test -f build/web/index.html || exit 1
+
+      - name: Add coi-serviceworker
         run: |
           cd build/web
-          # Add headers workaround for GitHub Pages
           wget -q https://raw.githubusercontent.com/nicbarker/coi-serviceworker/main/coi-serviceworker.min.js -O coi-serviceworker.min.js 2>/dev/null || true
-          if [ -f index.html ] && [ -f coi-serviceworker.min.js ]; then
+          if [ -f coi-serviceworker.min.js ]; then
             sed -i 's|<head>|<head><script src="coi-serviceworker.min.js"></script>|' index.html
           fi
 
