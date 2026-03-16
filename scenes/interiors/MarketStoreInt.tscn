@@ -1,0 +1,99 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/ChoiceNPC.gd" id="5"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(500, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 420)
+
+[sub_resource type="CircleShape2D" id="3"]
+radius = 34.0
+
+[node name="MarketStoreInt" type="Node2D"]
+script = ExtResource("1")
+room_id = "market_store_int"
+room_name = "Market Store"
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("2")
+style = "store_interior"
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(460, 380)
+inner_extent = Vector2(400, 326)
+top_gap_width = 0.0
+bottom_gap_width = 180.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.85)
+
+[node name="ExitDoor" parent="." instance=ExtResource("3")]
+position = Vector2(0, 340)
+target_room_id = "market_crossroads"
+target_spawn_id = "spawn_from_store"
+label_text = "Exit"
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_door" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 280)
+
+[node name="Shopkeeper" type="Node2D" parent="."]
+position = Vector2(0, -160)
+
+[node name="Body" type="Polygon2D" parent="Shopkeeper"]
+color = Color(0.48, 0.62, 0.42, 1)
+polygon = PackedVector2Array(-14, -8, 14, -8, 16, 24, -16, 24)
+
+[node name="Head" type="Polygon2D" parent="Shopkeeper"]
+color = Color(0.86, 0.74, 0.58, 1)
+polygon = PackedVector2Array(-10, -24, 10, -24, 12, -6, -12, -6)
+
+[node name="Interaction" type="Area2D" parent="Shopkeeper"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Shopkeeper"
+dialogue_lines = PackedStringArray("Welcome! Best prices in the market, guaranteed.")
+choice_prompt = "What are you looking for?"
+choices = [{
+"text": "Browse wares",
+"response_lines": PackedStringArray("Take a look around! We have potions, tools, and all sorts of supplies.", "If you see something you like, let me know."),
+"flag": ""
+}, {
+"text": "Ask for info",
+"response_lines": PackedStringArray("The jeweler next door has been acting strange lately. Keeps talking about some rare gem.", "And between you and me, the docks have been getting rowdy. Watch yourself."),
+"flag": ""
+}, {
+"text": "Just passing through",
+"response_lines": PackedStringArray("No worries! Come back anytime."),
+"flag": ""
+}]
+repeat_dialogue_lines = PackedStringArray("Back for more? Take your time browsing.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shopkeeper/Interaction"]
+shape = SubResource("3")
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")

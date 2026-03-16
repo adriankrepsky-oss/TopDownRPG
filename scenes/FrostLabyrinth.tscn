@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forest_background.png" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/StormBoss.tscn" id="7"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="99"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(690, 40)
@@ -23,9 +24,9 @@ room_id = "frost_labyrinth"
 room_name = "Frost Labyrinth"
 navigation_hint = "The late run stops forgiving mistakes here. The boss blinks around the room and punishes panic."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("6")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("99")
+style = "frost_labyrinth"
 
 [node name="RoomTint" type="Polygon2D" parent="."]
 z_index = 1

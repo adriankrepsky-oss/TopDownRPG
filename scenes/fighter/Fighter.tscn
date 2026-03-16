@@ -1,0 +1,700 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighter/Fighter.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(24, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(30, 24)
+
+[node name="Fighter" type="CharacterBody2D"]
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Visuals" type="Node2D" parent="."]
+
+; === SCARF (flowing behind, drawn first so it's behind body) ===
+
+[node name="ScarfTrail" type="Polygon2D" parent="Visuals"]
+position = Vector2(-6, -14)
+color = Color(0.85, 0.15, 0.2, 0.7)
+polygon = PackedVector2Array(-2, 0, 2, 0, 4, 8, 6, 18, 4, 28, 0, 32, -4, 26, -2, 16, -4, 6)
+
+[node name="ScarfTrailTip" type="Polygon2D" parent="Visuals"]
+position = Vector2(-6, -14)
+color = Color(0.9, 0.2, 0.25, 0.5)
+polygon = PackedVector2Array(0, 30, 2, 34, -2, 38, -4, 34)
+
+; === COAT / JACKET (long coat like anime protagonist) ===
+
+[node name="CoatBack" type="Polygon2D" parent="Visuals"]
+color = Color(0.12, 0.12, 0.18, 1)
+polygon = PackedVector2Array(-14, -16, 14, -16, 16, 28, 12, 32, 4, 30, -4, 30, -12, 32, -16, 28)
+
+[node name="CoatTailLeft" type="Polygon2D" parent="Visuals"]
+color = Color(0.1, 0.1, 0.16, 1)
+polygon = PackedVector2Array(-14, 24, -8, 24, -6, 32, -4, 38, -8, 40, -14, 36, -16, 30)
+
+[node name="CoatTailRight" type="Polygon2D" parent="Visuals"]
+color = Color(0.1, 0.1, 0.16, 1)
+polygon = PackedVector2Array(8, 24, 14, 24, 16, 30, 14, 36, 8, 40, 4, 38, 6, 32)
+
+; === LEGS ===
+
+[node name="LegLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, 22)
+color = Color(0.15, 0.15, 0.22, 1)
+polygon = PackedVector2Array(-4, 0, 4, 0, 5, 14, -3, 14)
+
+[node name="LegRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, 22)
+color = Color(0.15, 0.15, 0.22, 1)
+polygon = PackedVector2Array(-4, 0, 4, 0, 5, 14, -3, 14)
+
+; === BOOTS (armored style) ===
+
+[node name="BootLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, 35)
+color = Color(0.2, 0.18, 0.28, 1)
+polygon = PackedVector2Array(-5, -2, 6, -2, 7, 4, 6, 6, -5, 6, -6, 4)
+
+[node name="BootLeftSole" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, 35)
+color = Color(0.14, 0.12, 0.2, 1)
+polygon = PackedVector2Array(-6, 4, 7, 4, 8, 7, -6, 7)
+
+[node name="BootLeftAccent" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, 35)
+color = Color(0.5, 0.3, 0.8, 0.5)
+polygon = PackedVector2Array(-4, -1, 5, -1, 5, 0, -4, 0)
+
+[node name="BootRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, 35)
+color = Color(0.2, 0.18, 0.28, 1)
+polygon = PackedVector2Array(-6, -2, 5, -2, 6, 4, 5, 6, -5, 6, -7, 4)
+
+[node name="BootRightSole" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, 35)
+color = Color(0.14, 0.12, 0.2, 1)
+polygon = PackedVector2Array(-7, 4, 6, 4, 7, 7, -7, 7)
+
+[node name="BootRightAccent" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, 35)
+color = Color(0.5, 0.3, 0.8, 0.5)
+polygon = PackedVector2Array(-5, -1, 4, -1, 4, 0, -5, 0)
+
+; === TORSO (jacket front) ===
+
+[node name="TorsoBase" type="Polygon2D" parent="Visuals"]
+color = Color(0.14, 0.14, 0.2, 1)
+polygon = PackedVector2Array(-12, -16, 12, -16, 13, 22, -13, 22)
+
+[node name="JacketLapelLeft" type="Polygon2D" parent="Visuals"]
+color = Color(0.18, 0.16, 0.26, 1)
+polygon = PackedVector2Array(-12, -16, -2, -16, -4, -4, -6, 6, -12, 6)
+
+[node name="JacketLapelRight" type="Polygon2D" parent="Visuals"]
+color = Color(0.18, 0.16, 0.26, 1)
+polygon = PackedVector2Array(2, -16, 12, -16, 12, 6, 6, 6, 4, -4)
+
+[node name="ShirtV" type="Polygon2D" parent="Visuals"]
+color = Color(0.85, 0.85, 0.92, 1)
+polygon = PackedVector2Array(-3, -16, 3, -16, 5, -6, 0, 2, -5, -6)
+
+[node name="JacketCenterLine" type="Polygon2D" parent="Visuals"]
+color = Color(0.1, 0.1, 0.15, 1)
+polygon = PackedVector2Array(-1, 2, 1, 2, 1, 22, -1, 22)
+
+; === BELT WITH BUCKLE ===
+
+[node name="Belt" type="Polygon2D" parent="Visuals"]
+color = Color(0.25, 0.2, 0.15, 1)
+polygon = PackedVector2Array(-13, 6, 13, 6, 13, 10, -13, 10)
+
+[node name="BeltBuckle" type="Polygon2D" parent="Visuals"]
+color = Color(0.75, 0.65, 0.3, 1)
+polygon = PackedVector2Array(-3, 6, 3, 6, 3, 10, -3, 10)
+
+[node name="BeltBuckleInner" type="Polygon2D" parent="Visuals"]
+color = Color(0.55, 0.45, 0.2, 1)
+polygon = PackedVector2Array(-1.5, 7, 1.5, 7, 1.5, 9, -1.5, 9)
+
+; === SHOULDER PADS ===
+
+[node name="ShoulderLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-14, -16)
+color = Color(0.2, 0.18, 0.3, 1)
+polygon = PackedVector2Array(-4, -3, 4, -3, 5, 3, -3, 5, -5, 2)
+
+[node name="ShoulderLeftAccent" type="Polygon2D" parent="Visuals"]
+position = Vector2(-14, -16)
+color = Color(0.5, 0.3, 0.8, 0.5)
+polygon = PackedVector2Array(-3, -2, 3, -2, 3, -1, -3, -1)
+
+[node name="ShoulderRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(14, -16)
+color = Color(0.2, 0.18, 0.3, 1)
+polygon = PackedVector2Array(-4, -3, 4, -3, 5, 2, 3, 5, -5, 3)
+
+[node name="ShoulderRightAccent" type="Polygon2D" parent="Visuals"]
+position = Vector2(14, -16)
+color = Color(0.5, 0.3, 0.8, 0.5)
+polygon = PackedVector2Array(-3, -2, 3, -2, 3, -1, -3, -1)
+
+; === ARMS (wrapped / gauntlet style) ===
+
+[node name="ArmLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-16, -8)
+color = Color(0.16, 0.14, 0.24, 1)
+polygon = PackedVector2Array(-3, -6, 3, -6, 4, 10, -2, 10)
+
+[node name="ArmLeftWrap1" type="Polygon2D" parent="Visuals"]
+position = Vector2(-16, -8)
+color = Color(0.3, 0.25, 0.2, 0.6)
+polygon = PackedVector2Array(-2, 0, 3, -1, 4, 1, -1, 2)
+
+[node name="ArmLeftWrap2" type="Polygon2D" parent="Visuals"]
+position = Vector2(-16, -8)
+color = Color(0.3, 0.25, 0.2, 0.6)
+polygon = PackedVector2Array(-2, 4, 3, 3, 4, 5, -1, 6)
+
+[node name="ArmRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(16, -8)
+color = Color(0.16, 0.14, 0.24, 1)
+polygon = PackedVector2Array(-3, -6, 3, -6, 4, 10, -2, 10)
+
+[node name="ArmRightWrap1" type="Polygon2D" parent="Visuals"]
+position = Vector2(16, -8)
+color = Color(0.3, 0.25, 0.2, 0.6)
+polygon = PackedVector2Array(-3, -1, 2, 0, 1, 2, -4, 1)
+
+[node name="ArmRightWrap2" type="Polygon2D" parent="Visuals"]
+position = Vector2(16, -8)
+color = Color(0.3, 0.25, 0.2, 0.6)
+polygon = PackedVector2Array(-3, 3, 2, 4, 1, 6, -4, 5)
+
+; === HANDS (fingerless gloves) ===
+
+[node name="HandLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-16, 4)
+color = Color(0.92, 0.78, 0.65, 1)
+polygon = PackedVector2Array(-3, -2, 3, -2, 4, 4, -2, 4)
+
+[node name="GloveLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-16, 4)
+color = Color(0.2, 0.18, 0.16, 1)
+polygon = PackedVector2Array(-3, -2, 3, -2, 3, 0, -3, 0)
+
+[node name="HandRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(16, 4)
+color = Color(0.92, 0.78, 0.65, 1)
+polygon = PackedVector2Array(-3, -2, 3, -2, 4, 4, -2, 4)
+
+[node name="GloveRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(16, 4)
+color = Color(0.2, 0.18, 0.16, 1)
+polygon = PackedVector2Array(-3, -2, 3, -2, 3, 0, -3, 0)
+
+; === THOR'S HAMMER (shown/hidden via script based on weapon_id) ===
+
+[node name="HammerHandle" type="Polygon2D" parent="Visuals"]
+position = Vector2(18, 0)
+color = Color(0.45, 0.3, 0.15, 1)
+polygon = PackedVector2Array(-2, -14, 2, -14, 2, 8, -2, 8)
+
+[node name="HammerHead" type="Polygon2D" parent="Visuals"]
+position = Vector2(18, -12)
+color = Color(0.55, 0.55, 0.6, 1)
+polygon = PackedVector2Array(-6, -5, 6, -5, 7, -3, 7, 3, 6, 5, -6, 5, -7, 3, -7, -3)
+
+[node name="HammerHeadAccent" type="Polygon2D" parent="Visuals"]
+position = Vector2(18, -12)
+color = Color(0.3, 0.5, 0.9, 0.6)
+polygon = PackedVector2Array(-5, -2, 5, -2, 5, 0, -5, 0)
+
+[node name="HammerGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -12)
+color = Color(0.4, 0.6, 1.0, 0.0)
+polygon = PackedVector2Array(-10, -8, 0, -10, 10, -8, 12, 0, 10, 8, 0, 10, -10, 8, -12, 0)
+
+; === SHADOW BLADE (shown/hidden via script) ===
+
+[node name="ShadowBlade" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.3, 0.2, 0.45, 0.9)
+polygon = PackedVector2Array(-1, 6, 1, 6, 2, -18, 0, -22, -2, -18)
+
+[node name="ShadowBladeEdge" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.6, 0.4, 0.9, 0.5)
+polygon = PackedVector2Array(0, -22, 1, -18, 1, 6, 0, 6)
+
+; === FROST STAFF (shown/hidden via script) ===
+
+[node name="FrostStaff" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, 0)
+color = Color(0.35, 0.25, 0.2, 1)
+polygon = PackedVector2Array(-1.5, -20, 1.5, -20, 2, 10, -2, 10)
+
+[node name="FrostStaffCrystal" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -24)
+color = Color(0.5, 0.8, 1.0, 0.9)
+polygon = PackedVector2Array(0, -6, 4, -2, 4, 2, 0, 6, -4, 2, -4, -2)
+
+[node name="FrostStaffGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -24)
+color = Color(0.4, 0.7, 1.0, 0.25)
+polygon = PackedVector2Array(0, -9, 6, -3, 6, 3, 0, 9, -6, 3, -6, -3)
+
+; === DRAGON GAUNTLETS (shown/hidden via script) ===
+
+[node name="DragonGauntletLeft" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(-16, 2)
+color = Color(0.35, 0.2, 0.15, 1)
+polygon = PackedVector2Array(-5, -4, 5, -4, 6, 5, -4, 5)
+
+[node name="DragonGauntletRight" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(16, 2)
+color = Color(0.35, 0.2, 0.15, 1)
+polygon = PackedVector2Array(-5, -4, 5, -4, 6, 5, -4, 5)
+
+[node name="DragonGauntletFlame" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(16, -2)
+color = Color(1.0, 0.5, 0.15, 0.4)
+polygon = PackedVector2Array(-3, 2, 0, -4, 3, 2)
+
+; === WARP DAGGER (shown/hidden via script) ===
+
+[node name="WarpDagger" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.7, 0.15, 0.55, 0.95)
+polygon = PackedVector2Array(-1, 4, 1, 4, 2, -12, 0, -16, -2, -12)
+
+[node name="WarpDaggerGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.9, 0.2, 0.7, 0.3)
+polygon = PackedVector2Array(-3, 4, 3, 4, 4, -12, 0, -18, -4, -12)
+
+; === BOMB FLAIL (shown/hidden via script) ===
+
+[node name="BombFlailChain" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.5, 0.45, 0.4, 0.8)
+polygon = PackedVector2Array(-1, 0, 1, 0, 2, -10, -2, -10)
+
+[node name="BombFlailHead" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -14)
+color = Color(0.3, 0.3, 0.32, 1)
+polygon = PackedVector2Array(0, -7, 5, -5, 7, 0, 5, 5, 0, 7, -5, 5, -7, 0, -5, -5)
+
+[node name="BombFlailSpike" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -14)
+color = Color(0.55, 0.5, 0.45, 1)
+polygon = PackedVector2Array(0, -9, 2, -7, -2, -7, 7, -3, 6, -1, 5, -4, 0, 9, -2, 7, 2, 7, -7, 3, -6, 1, -5, 4, 9, 0, 7, -2, 7, 2, -9, 0, -7, 2, -7, -2)
+
+[node name="BombFlailFuse" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -22)
+color = Color(1.0, 0.6, 0.1, 0.8)
+polygon = PackedVector2Array(-1, 0, 0, -3, 1, 0)
+
+; === PLASMA CANNON (shown/hidden via script) ===
+
+[node name="PlasmaCannon" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(16, -1)
+color = Color(0.25, 0.35, 0.4, 1)
+polygon = PackedVector2Array(-4, -5, 6, -5, 8, -3, 8, 3, 6, 5, -4, 5, -6, 3, -6, -3)
+
+[node name="PlasmaCannonBarrel" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(24, -1)
+color = Color(0.35, 0.45, 0.5, 1)
+polygon = PackedVector2Array(-2, -3, 8, -2, 8, 2, -2, 3)
+
+[node name="PlasmaCannonGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(32, -1)
+color = Color(0.2, 0.9, 1.0, 0.4)
+polygon = PackedVector2Array(-2, -2, 2, -2, 3, 0, 2, 2, -2, 2, -3, 0)
+
+; === KUNAI STARS ===
+
+[node name="KunaiStar" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.7, 0.7, 0.75, 0.95)
+polygon = PackedVector2Array(0, -8, 2, -2, 8, -2, 3, 2, 5, 8, 0, 4, -5, 8, -3, 2, -8, -2, -2, -2)
+
+[node name="KunaiStarGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.8, 0.8, 0.85, 0.3)
+polygon = PackedVector2Array(0, -10, 3, -3, 10, -3, 4, 3, 6, 10, 0, 5, -6, 10, -4, 3, -10, -3, -3, -3)
+
+; === VINE WHIP ===
+
+[node name="VineWhip" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.25, 0.6, 0.15, 0.95)
+polygon = PackedVector2Array(-1, 6, 1, 6, 2, -4, 4, -10, 3, -16, 1, -14, 0, -8, -1, -4)
+
+[node name="VineWhipLeaf" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(22, -12)
+color = Color(0.3, 0.8, 0.2, 0.8)
+polygon = PackedVector2Array(0, -4, 4, -1, 3, 3, 0, 4, -3, 2)
+
+; === IRON BUCKLER ===
+
+[node name="IronBuckler" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(16, -4)
+color = Color(0.45, 0.5, 0.6, 0.95)
+polygon = PackedVector2Array(-6, -10, 6, -10, 8, -6, 8, 6, 6, 10, -6, 10, -8, 6, -8, -6)
+
+[node name="IronBucklerBorder" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(16, -4)
+color = Color(0.6, 0.65, 0.75, 0.5)
+polygon = PackedVector2Array(-7, -11, 7, -11, 9, -7, 9, 7, 7, 11, -7, 11, -9, 7, -9, -7)
+
+; === SPIRIT BOW ===
+
+[node name="SpiritBow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.8, 0.65, 0.3, 0.95)
+polygon = PackedVector2Array(-2, -14, 0, -16, 2, -14, 3, -6, 3, 6, 2, 14, 0, 16, -2, 14, -1, 6, -1, -6)
+
+[node name="SpiritBowString" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(1.0, 0.95, 0.7, 0.7)
+polygon = PackedVector2Array(-1, -14, 0, -14, 0, 14, -1, 14)
+
+[node name="SpiritBowGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(1.0, 0.9, 0.5, 0.25)
+polygon = PackedVector2Array(-4, -12, 4, -12, 5, 0, 4, 12, -4, 12, -5, 0)
+
+; === THUNDER CLAWS ===
+
+[node name="ThunderClawLeft" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(-10, -4)
+color = Color(0.9, 0.85, 0.2, 0.95)
+polygon = PackedVector2Array(-4, 2, -3, -2, -1, -8, 0, -2, 1, 2, 0, 4)
+
+[node name="ThunderClawRight" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -4)
+color = Color(0.9, 0.85, 0.2, 0.95)
+polygon = PackedVector2Array(-1, 2, 0, -2, 2, -8, 3, -2, 4, 2, 1, 4)
+
+[node name="ThunderClawSpark" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -6)
+color = Color(1.0, 1.0, 0.5, 0.4)
+polygon = PackedVector2Array(0, -6, 2, -2, 6, 0, 2, 2, 0, 6, -2, 2, -6, 0, -2, -2)
+
+; === POISON FANG ===
+
+[node name="PoisonFangLeft" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(-8, -3)
+color = Color(0.3, 0.7, 0.1, 0.95)
+polygon = PackedVector2Array(-1, 4, 0, -10, 1, 4)
+
+[node name="PoisonFangRight" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -3)
+color = Color(0.3, 0.7, 0.1, 0.95)
+polygon = PackedVector2Array(-1, 4, 0, -10, 1, 4)
+
+[node name="PoisonFangDrip" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -10)
+color = Color(0.4, 0.9, 0.15, 0.4)
+polygon = PackedVector2Array(-1, 0, 0, -3, 1, 0, 0, 3)
+
+; === FIRE GREATSWORD ===
+
+[node name="FireGreatsword" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.7, 0.25, 0.08, 0.95)
+polygon = PackedVector2Array(-3, 6, -2, -18, 0, -24, 2, -18, 3, 6)
+
+[node name="FireGreatswordEdge" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(1.0, 0.5, 0.15, 0.8)
+polygon = PackedVector2Array(0, -24, 2, -18, 1, 4, 0, 6, -1, 4)
+
+[node name="FireGreatswordGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(1.0, 0.3, 0.1, 0.25)
+polygon = PackedVector2Array(-4, 6, -3, -18, 0, -26, 3, -18, 4, 6)
+
+; === BLOOD SCYTHE ===
+
+[node name="BloodScythe" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.5, 0.08, 0.1, 0.95)
+polygon = PackedVector2Array(-1, 8, -1, -8, 2, -14, 8, -16, 10, -12, 4, -8, 1, -6, 1, 8)
+
+[node name="BloodScytheHandle" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.35, 0.2, 0.22, 0.95)
+polygon = PackedVector2Array(-1, 4, 1, 4, 1, 12, -1, 12)
+
+[node name="BloodScytheGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(22, -14)
+color = Color(0.7, 0.1, 0.15, 0.3)
+polygon = PackedVector2Array(-3, -3, 3, -3, 4, 0, 3, 3, -3, 3, -4, 0)
+
+; === GRAVITY ORB ===
+
+[node name="GravityOrb" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -6)
+color = Color(0.3, 0.08, 0.45, 0.95)
+polygon = PackedVector2Array(-5, -3, -3, -5, 3, -5, 5, -3, 5, 3, 3, 5, -3, 5, -5, 3)
+
+[node name="GravityOrbRing" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -6)
+color = Color(0.5, 0.15, 0.7, 0.5)
+polygon = PackedVector2Array(-7, -4, -4, -7, 4, -7, 7, -4, 7, 4, 4, 7, -4, 7, -7, 4)
+
+[node name="GravityOrbGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -6)
+color = Color(0.4, 0.1, 0.6, 0.25)
+polygon = PackedVector2Array(-8, -5, -5, -8, 5, -8, 8, -5, 8, 5, 5, 8, -5, 8, -8, 5)
+
+; === CRYSTAL SPEAR ===
+
+[node name="CrystalSpear" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.4, 0.55, 0.8, 0.95)
+polygon = PackedVector2Array(-1, 10, -1, -16, 1, -16, 1, 10)
+
+[node name="CrystalSpearTip" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -2)
+color = Color(0.5, 0.7, 1.0, 0.95)
+polygon = PackedVector2Array(-3, -16, 0, -24, 3, -16)
+
+[node name="CrystalSpearGlow" type="Polygon2D" parent="Visuals"]
+visible = false
+position = Vector2(18, -18)
+color = Color(0.5, 0.7, 1.0, 0.3)
+polygon = PackedVector2Array(-4, -4, 0, -8, 4, -4, 4, 2, -4, 2)
+
+; === NECK ===
+
+[node name="Neck" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -20)
+color = Color(0.92, 0.78, 0.65, 1)
+polygon = PackedVector2Array(-4, -4, 4, -4, 4, 2, -4, 2)
+
+; === SCARF FRONT WRAP ===
+
+[node name="ScarfFront" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -20)
+color = Color(0.85, 0.15, 0.2, 1)
+polygon = PackedVector2Array(-6, -3, 6, -3, 5, 2, -5, 2)
+
+[node name="ScarfKnot" type="Polygon2D" parent="Visuals"]
+position = Vector2(2, -20)
+color = Color(0.75, 0.12, 0.18, 1)
+polygon = PackedVector2Array(-3, -2, 3, -2, 4, 2, -2, 3)
+
+; === HEAD (anime proportions - bigger) ===
+
+[node name="HeadBase" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.92, 0.8, 0.68, 1)
+polygon = PackedVector2Array(-11, -10, -8, -14, -3, -16, 3, -16, 8, -14, 11, -10, 12, -4, 12, 4, 10, 9, 6, 12, 0, 13, -6, 12, -10, 9, -12, 4, -12, -4)
+
+; === ANIME EYES (large, expressive) ===
+
+[node name="EyeWhiteLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, -36)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-4, -4, -2, -5, 2, -5, 4, -4, 5, -1, 4, 3, 2, 5, -2, 5, -4, 3, -5, -1)
+
+[node name="IrisLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, -35)
+color = Color(0.2, 0.4, 0.9, 1)
+polygon = PackedVector2Array(-3, -3, 0, -4, 3, -3, 4, 0, 3, 3, 0, 4, -3, 3, -4, 0)
+
+[node name="PupilLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, -35)
+color = Color(0.05, 0.05, 0.12, 1)
+polygon = PackedVector2Array(-1.5, -2, 1.5, -2, 2, 0, 1.5, 2, -1.5, 2, -2, 0)
+
+[node name="EyeShineLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-3, -37)
+color = Color(1, 1, 1, 0.9)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="EyeShineLeft2" type="Polygon2D" parent="Visuals"]
+position = Vector2(-6, -34)
+color = Color(1, 1, 1, 0.5)
+polygon = PackedVector2Array(-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5)
+
+[node name="EyeWhiteRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, -36)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-4, -4, -2, -5, 2, -5, 4, -4, 5, -1, 4, 3, 2, 5, -2, 5, -4, 3, -5, -1)
+
+[node name="IrisRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, -35)
+color = Color(0.2, 0.4, 0.9, 1)
+polygon = PackedVector2Array(-3, -3, 0, -4, 3, -3, 4, 0, 3, 3, 0, 4, -3, 3, -4, 0)
+
+[node name="PupilRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, -35)
+color = Color(0.05, 0.05, 0.12, 1)
+polygon = PackedVector2Array(-1.5, -2, 1.5, -2, 2, 0, 1.5, 2, -1.5, 2, -2, 0)
+
+[node name="EyeShineRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(7, -37)
+color = Color(1, 1, 1, 0.9)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="EyeShineRight2" type="Polygon2D" parent="Visuals"]
+position = Vector2(4, -34)
+color = Color(1, 1, 1, 0.5)
+polygon = PackedVector2Array(-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5)
+
+; === EYEBROWS (sharp, determined) ===
+
+[node name="BrowLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(-5, -42)
+color = Color(0.12, 0.1, 0.25, 1)
+polygon = PackedVector2Array(-5, 0, -3, -2, 4, -1, 5, 1, 3, 1, -3, 0)
+
+[node name="BrowRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(5, -42)
+color = Color(0.12, 0.1, 0.25, 1)
+polygon = PackedVector2Array(-5, -1, -4, 0, 3, 1, 5, 0, 3, -2, -4, -1)
+
+; === MOUTH ===
+
+[node name="Mouth" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -27)
+color = Color(0.7, 0.45, 0.4, 1)
+polygon = PackedVector2Array(-3, 0, 0, 1, 3, 0, 2, 1, 0, 2, -2, 1)
+
+; === ANIME HAIR (spiky, layered) ===
+
+[node name="HairBack" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.1, 0.08, 0.22, 1)
+polygon = PackedVector2Array(-14, -6, -10, -14, -6, -18, 0, -20, 6, -18, 10, -14, 14, -6, 14, 6, 12, 12, 8, 14, -8, 14, -12, 12, -14, 6)
+
+[node name="HairSpikeTopLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.12, 0.1, 0.28, 1)
+polygon = PackedVector2Array(-8, -16, -4, -28, -2, -18, 0, -20)
+
+[node name="HairSpikeTop" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.14, 0.12, 0.3, 1)
+polygon = PackedVector2Array(-2, -18, 2, -32, 4, -18, 0, -20)
+
+[node name="HairSpikeTopRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.12, 0.1, 0.28, 1)
+polygon = PackedVector2Array(2, -18, 6, -26, 8, -16, 4, -18)
+
+[node name="HairSpikeSideLeft" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.12, 0.1, 0.26, 1)
+polygon = PackedVector2Array(-14, -4, -20, -8, -14, -10, -12, -14)
+
+[node name="HairSpikeSideRight" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.12, 0.1, 0.26, 1)
+polygon = PackedVector2Array(14, -4, 20, -8, 14, -10, 12, -14)
+
+[node name="HairFringe" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.13, 0.11, 0.28, 1)
+polygon = PackedVector2Array(-12, -8, -8, -14, -4, -10, -1, -14, 2, -10, 5, -14, 8, -10, 12, -14, 14, -8, 12, -4, 8, -6, 4, -4, 0, -6, -4, -4, -8, -6, -12, -4)
+
+; === HAIR HIGHLIGHTS ===
+
+[node name="HairHighlight1" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.25, 0.2, 0.5, 0.4)
+polygon = PackedVector2Array(-2, -18, 0, -22, 2, -18, 0, -16)
+
+[node name="HairHighlight2" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -34)
+color = Color(0.3, 0.22, 0.55, 0.3)
+polygon = PackedVector2Array(4, -14, 6, -18, 8, -14, 6, -12)
+
+; === JACKET CHEST EMBLEM (energy symbol) ===
+
+[node name="Emblem" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -4)
+color = Color(0.5, 0.3, 0.85, 0.6)
+polygon = PackedVector2Array(0, -4, 3, -2, 3, 2, 0, 4, -3, 2, -3, -2)
+
+[node name="EmblemInner" type="Polygon2D" parent="Visuals"]
+position = Vector2(0, -4)
+color = Color(0.65, 0.45, 1, 0.4)
+polygon = PackedVector2Array(0, -2, 1.5, -1, 1.5, 1, 0, 2, -1.5, 1, -1.5, -1)
+
+; === ATTACK VISUAL (slash effect, hidden by default) ===
+
+[node name="AttackVisual" type="Node2D" parent="Visuals"]
+visible = false
+
+[node name="SlashArc" type="Polygon2D" parent="Visuals/AttackVisual"]
+color = Color(1, 1, 1, 0.7)
+polygon = PackedVector2Array(4, -14, 18, -10, 26, -4, 28, 4, 24, 10, 16, 14, 12, 10, 18, 6, 22, 0, 18, -6, 10, -10)
+
+[node name="SlashTrail" type="Polygon2D" parent="Visuals/AttackVisual"]
+color = Color(0.6, 0.8, 1, 0.4)
+polygon = PackedVector2Array(2, -12, 14, -8, 22, -2, 24, 6, 20, 12, 14, 8, 18, 2, 14, -4, 8, -8)
+
+; === ATTACK HITBOX (Area2D, disabled by default) ===
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("RectangleShape2D_attack")
+disabled = true

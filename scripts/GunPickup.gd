@@ -20,7 +20,12 @@ func _on_body_entered(body: Node2D) -> void:
 	if collision_shape.disabled or not body.is_in_group("player"):
 		return
 
-	GameState.add_item(item_id, amount)
+	if not GameState.add_item(item_id, amount):
+		var current_scene_fail = get_tree().current_scene
+		if current_scene_fail != null and current_scene_fail.has_method("show_status_message"):
+			current_scene_fail.show_status_message(GameState.get_add_item_failure_reason(item_id, amount))
+		return
+
 	GameState.set_flag(saved_flag)
 
 	var current_scene = get_tree().current_scene

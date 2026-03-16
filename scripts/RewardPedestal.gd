@@ -40,8 +40,13 @@ func _grant_reward() -> void:
 	if GameState.get_flag(reward_flag):
 		return
 
+	if not GameState.add_item(reward_item_id, reward_amount):
+		var current_scene_fail = get_tree().current_scene
+		if current_scene_fail != null and current_scene_fail.has_method("show_status_message"):
+			current_scene_fail.show_status_message(GameState.get_add_item_failure_reason(reward_item_id, reward_amount))
+		return
+
 	GameState.set_flag(reward_flag)
-	GameState.add_item(reward_item_id, reward_amount)
 	var current_scene = get_tree().current_scene
 	if current_scene != null and current_scene.has_method("show_status_message"):
 		current_scene.show_status_message(reward_message)

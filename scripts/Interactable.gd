@@ -8,6 +8,7 @@ class_name Interactable
 @export var one_time_flag := ""
 @export var reward_item_id := ""
 @export var reward_amount := 1
+@export var reward_coins := 0
 @export var reward_message := ""
 
 
@@ -26,22 +27,37 @@ func interact(_player: Node) -> void:
 		lines = repeat_dialogue_lines
 
 	var callback: Callable = Callable()
-	if first_time and (not one_time_flag.is_empty() or not reward_item_id.is_empty()):
+	if first_time and (not one_time_flag.is_empty() or not reward_item_id.is_empty() or reward_coins > 0):
 		callback = Callable(self, "_complete_one_time_interaction")
 
 	var current_scene = get_tree().current_scene
 	if current_scene != null and current_scene.has_method("show_dialogue"):
-		current_scene.show_dialogue(speaker_name, lines, callback)
+		current_scene.show_dialogue(speaker_name, lines, callback, _get_bubble_position())
+
+
+func _get_bubble_position() -> Vector2:
+	var parent_node := get_parent()
+	if parent_node is Node2D:
+		return (parent_node as Node2D).global_position + Vector2(0, -42)
+	return global_position + Vector2(0, -42)
 
 
 func _complete_one_time_interaction() -> void:
 	if not one_time_flag.is_empty():
 		GameState.set_flag(one_time_flag)
 
+	if reward_coins > 0:
+		GameState.add_coins(reward_coins)
+
 	if not reward_item_id.is_empty():
-		GameState.add_item(reward_item_id, reward_amount)
-		if not reward_message.is_empty():
-			var current_scene = get_tree().current_scene
-			if current_scene != null and current_scene.has_method("show_status_message"):
+		var current_scene = get_tree().current_scene
+		if GameState.add_item(reward_item_id, reward_amount):
+			if not reward_message.is_empty() and current_scene != null and current_scene.has_method("show_status_message"):
 				current_scene.show_status_message(reward_message)
+		elif current_scene != null and current_scene.has_method("show_status_message"):
+			current_scene.show_status_message(GameState.get_add_item_failure_reason(reward_item_id, reward_amount))
+	elif not reward_message.is_empty():
+		var current_scene = get_tree().current_scene
+		if current_scene != null and current_scene.has_method("show_status_message"):
+			current_scene.show_status_message(reward_message)
 

@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ArmedRobber.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="5"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/bloom_background.png" id="6"]
-[ext_resource type="PackedScene" path="res://scenes/EmberBoss.tscn" id="7"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="7"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(690, 40)
@@ -15,35 +15,45 @@ size = Vector2(690, 40)
 size = Vector2(40, 1030)
 
 [sub_resource type="RectangleShape2D" id="3"]
-size = Vector2(340, 120)
+size = Vector2(280, 84)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(92, 170)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(180, 60)
+
+[sub_resource type="CircleShape2D" id="6"]
+radius = 34.0
 
 [node name="EmberFields" type="Node2D"]
 script = ExtResource("1")
 room_id = "ember_fields"
-room_name = "Ember Fields"
-navigation_hint = "Heat haze rolls across the road. Clear the field and take the upper portal."
+room_name = "Old Prison"
+navigation_hint = "Break the yard, reach the cells, free the prisoner, and escape through the roof gate."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("6")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("7")
+style = "prison"
 
-[node name="EmberTint" type="Polygon2D" parent="."]
+[node name="PrisonWash" type="Polygon2D" parent="."]
 z_index = 1
-color = Color(0.64, 0.18, 0.06, 0.38)
+color = Color(0.24, 0.18, 0.16, 0.4)
 polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
 
-[node name="AshGlow" type="Polygon2D" parent="."]
-position = Vector2(0, -60)
+[node name="CellGlow" type="Polygon2D" parent="."]
+position = Vector2(170, -136)
 z_index = 2
-color = Color(1, 0.52, 0.14, 0.16)
-polygon = PackedVector2Array(0, -182, 136, -92, 190, 0, 136, 112, 0, 188, -136, 112, -190, 0, -136, -92)
+color = Color(1, 0.58, 0.26, 0.14)
+polygon = PackedVector2Array(-120, -90, 120, -90, 148, 0, 120, 92, -120, 92, -148, 0)
 
-[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+[node name="BoundaryOverlay" parent="." instance=ExtResource("3")]
 outer_extent = Vector2(700, 560)
 inner_extent = Vector2(635, 515)
 top_gap_width = 220.0
 top_gap_offset = 120.0
 bottom_gap_width = 220.0
+bottom_gap_offset = 0.0
 fill_color = Color(0.01, 0.01, 0.02, 0.82)
 line_color = Color(0.11, 0.12, 0.16, 0.92)
 
@@ -59,36 +69,61 @@ target_mode = "next_main"
 portal_color = Color(1, 0.44, 0.18, 1)
 glow_color = Color(1, 0.44, 0.18, 0.22)
 
-[node name="BerryPickup" parent="." instance=ExtResource("4")]
-position = Vector2(-198, 136)
-saved_flag = "berry_ember_fields_collected"
+[node name="GuardA" parent="." instance=ExtResource("4")]
+position = Vector2(-112, 96)
+max_hp = 4
+move_speed = 94.0
+detection_radius = 330.0
+preferred_distance = 148.0
+projectile_speed = 326.0
+shoot_cooldown = 1.02
+saved_enemy_id = "enemy_ember_guard_a_defeated"
+coin_reward = 3
 
-[node name="SlimeA" parent="." instance=ExtResource("3")]
-position = Vector2(-210, 72)
+[node name="GuardB" parent="." instance=ExtResource("4")]
+position = Vector2(72, 18)
 max_hp = 4
 move_speed = 96.0
-detection_radius = 260.0
-saved_enemy_id = "enemy_ember_slime_a_defeated"
-coin_reward = 2
+detection_radius = 340.0
+preferred_distance = 154.0
+projectile_speed = 332.0
+shoot_cooldown = 0.98
+saved_enemy_id = "enemy_ember_guard_b_defeated"
+coin_reward = 3
 
-[node name="SlimeB" parent="." instance=ExtResource("3")]
-position = Vector2(186, 42)
+[node name="GuardC" parent="." instance=ExtResource("4")]
+position = Vector2(212, -120)
 max_hp = 4
-move_speed = 100.0
-detection_radius = 270.0
-saved_enemy_id = "enemy_ember_slime_b_defeated"
-coin_reward = 2
+move_speed = 98.0
+detection_radius = 350.0
+preferred_distance = 160.0
+projectile_speed = 338.0
+shoot_cooldown = 0.92
+saved_enemy_id = "enemy_ember_guard_c_defeated"
+coin_reward = 3
 
-[node name="SlimeC" parent="." instance=ExtResource("3")]
-position = Vector2(-20, 180)
-max_hp = 4
-move_speed = 102.0
-detection_radius = 280.0
-saved_enemy_id = "enemy_ember_slime_c_defeated"
-coin_reward = 2
+[node name="Miro" type="Node2D" parent="."]
+position = Vector2(206, -126)
 
-[node name="EmberBoss" parent="." instance=ExtResource("7")]
-position = Vector2(0, -98)
+[node name="Body" type="Polygon2D" parent="Miro"]
+position = Vector2(0, 16)
+color = Color(0.32, 0.26, 0.16, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
+
+[node name="Head" type="Polygon2D" parent="Miro"]
+position = Vector2(0, -18)
+color = Color(0.95, 0.8, 0.66, 1)
+polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
+
+[node name="Interactable" type="Area2D" parent="Miro"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Miro"
+dialogue_lines = PackedStringArray("I heard the yard go loud. Good. That means you made it in.", "Get me out of this block and take the roof gate before they close it.")
+repeat_dialogue_lines = PackedStringArray("The guards still have angles on the roof. Clear them and run.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Miro/Interactable"]
+shape = SubResource("6")
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -136,8 +171,26 @@ position = Vector2(635, 0)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
 shape = SubResource("2")
 
-[node name="CenterField" type="StaticBody2D" parent="Colliders"]
-position = Vector2(0, 38)
+[node name="YardBarrier" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-10, 142)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CenterField"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/YardBarrier"]
 shape = SubResource("3")
+
+[node name="CellWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(92, -126)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CellWallLeft"]
+shape = SubResource("4")
+
+[node name="CellWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(322, -126)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/CellWallRight"]
+shape = SubResource("4")
+
+[node name="RoofGateBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(126, -300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/RoofGateBlock"]
+shape = SubResource("5")

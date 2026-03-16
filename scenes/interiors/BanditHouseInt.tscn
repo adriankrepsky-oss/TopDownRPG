@@ -1,0 +1,123 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ArmedRobber.tscn" id="5"]
+[ext_resource type="Script" path="res://scripts/DarkRoomOverlay.gd" id="6"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(500, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 420)
+
+[node name="BanditHouseInt" type="Node2D"]
+script = ExtResource("1")
+room_id = "bandit_house_int"
+room_name = "Bandit House Interior"
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("2")
+style = "house_interior"
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(460, 380)
+inner_extent = Vector2(400, 326)
+top_gap_width = 0.0
+bottom_gap_width = 180.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.92)
+
+[node name="ExitDoor" parent="." instance=ExtResource("3")]
+position = Vector2(0, 340)
+target_room_id = "bloom_marsh"
+target_spawn_id = "spawn_from_interior"
+label_text = "Exit"
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_door" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 280)
+
+[node name="Robber1" parent="." instance=ExtResource("5")]
+position = Vector2(-160, -120)
+max_hp = 8
+move_speed = 110.0
+detection_radius = 400.0
+preferred_distance = 140.0
+projectile_speed = 380.0
+shoot_cooldown = 0.7
+saved_enemy_id = "enemy_bandit_int_robber_a"
+coin_reward = 4
+
+[node name="Robber2" parent="." instance=ExtResource("5")]
+position = Vector2(180, -80)
+max_hp = 8
+move_speed = 115.0
+detection_radius = 400.0
+preferred_distance = 150.0
+projectile_speed = 360.0
+shoot_cooldown = 0.65
+saved_enemy_id = "enemy_bandit_int_robber_b"
+coin_reward = 4
+
+[node name="Robber3" parent="." instance=ExtResource("5")]
+position = Vector2(0, -220)
+max_hp = 10
+move_speed = 100.0
+detection_radius = 420.0
+preferred_distance = 160.0
+projectile_speed = 400.0
+shoot_cooldown = 0.55
+saved_enemy_id = "enemy_bandit_int_robber_c"
+coin_reward = 5
+
+[node name="Robber4" parent="." instance=ExtResource("5")]
+position = Vector2(-120, 60)
+max_hp = 5
+move_speed = 95.0
+detection_radius = 350.0
+preferred_distance = 130.0
+projectile_speed = 320.0
+shoot_cooldown = 0.9
+saved_enemy_id = "enemy_bandit_int_robber_d"
+coin_reward = 3
+
+[node name="Robber5" parent="." instance=ExtResource("5")]
+position = Vector2(160, 40)
+max_hp = 5
+move_speed = 98.0
+detection_radius = 360.0
+preferred_distance = 140.0
+projectile_speed = 330.0
+shoot_cooldown = 0.85
+saved_enemy_id = "enemy_bandit_int_robber_e"
+coin_reward = 3
+
+[node name="DarkOverlay" type="Node2D" parent="."]
+script = ExtResource("6")
+darkness_color = Color(0, 0, 0.02, 0.92)
+light_radius = 130.0
+light_falloff = 70.0
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")

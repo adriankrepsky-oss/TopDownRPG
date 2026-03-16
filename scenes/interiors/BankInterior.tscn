@@ -1,0 +1,232 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/ChoiceNPC.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/DarkRoomOverlay.gd" id="7"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 40.0
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(500, 40)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(40, 420)
+
+[node name="BankInterior" type="Node2D"]
+script = ExtResource("1")
+room_id = "bank_interior"
+room_name = "Stonebank Interior"
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("2")
+style = "bank_interior"
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(460, 380)
+inner_extent = Vector2(400, 326)
+top_gap_width = 0.0
+bottom_gap_width = 180.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.88)
+
+[node name="ExitDoor" parent="." instance=ExtResource("3")]
+position = Vector2(0, 340)
+target_room_id = "sunstone_ruins"
+target_spawn_id = "spawn_from_interior"
+label_text = "Exit"
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_door" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 280)
+
+[node name="BankClerk" type="Node2D" parent="."]
+position = Vector2(-100, 220)
+
+[node name="Body" type="Polygon2D" parent="BankClerk"]
+color = Color(0.32, 0.42, 0.56, 1)
+polygon = PackedVector2Array(-14, -8, 14, -8, 16, 24, -16, 24)
+
+[node name="Head" type="Polygon2D" parent="BankClerk"]
+color = Color(0.86, 0.76, 0.62, 1)
+polygon = PackedVector2Array(-10, -24, 10, -24, 12, -6, -12, -6)
+
+[node name="Interaction" type="Area2D" parent="BankClerk"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Bank Clerk"
+dialogue_lines = PackedStringArray("P-please don't hurt anyone!", "The gold bags are RIGHT THERE - the three big glowing bags up ahead! Just grab them and go!")
+choice_prompt = "What do you want?"
+choices = [{
+"text": "Where is the gold?",
+"response_lines": PackedStringArray("Look ahead! The three gold bags are on the shelves - you can see them GLOWING! Just walk up and grab them!"),
+"flag": "bank_clerk_told_gold"
+}, {
+"text": "Give me the safe code",
+"response_lines": PackedStringArray("The combination is 4-7-2! Please just leave us alone..."),
+"flag": "bank_combination"
+}, {
+"text": "Stay quiet",
+"response_lines": PackedStringArray("I won't move. I won't say a word. Just go..."),
+"flag": ""
+}]
+repeat_dialogue_lines = PackedStringArray("I told you everything! The gold bags are ahead - just GRAB THEM!")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BankClerk/Interaction"]
+shape = SubResource("1")
+
+[node name="VaultGold1" type="Node2D" parent="."]
+position = Vector2(-120, 80)
+
+[node name="Glow" type="Polygon2D" parent="VaultGold1"]
+z_index = -1
+color = Color(1, 0.85, 0.2, 0.22)
+polygon = PackedVector2Array(-60, -44, 0, -64, 60, -44, 64, 20, 0, 64, -64, 20)
+
+[node name="Visual" type="Polygon2D" parent="VaultGold1"]
+color = Color(0.94, 0.78, 0.18, 1)
+polygon = PackedVector2Array(-26, -20, -18, -28, 18, -28, 26, -20, 30, 18, 22, 26, -22, 26, -30, 18)
+
+[node name="Tie" type="Polygon2D" parent="VaultGold1"]
+color = Color(0.72, 0.52, 0.12, 1)
+polygon = PackedVector2Array(-12, -28, 12, -28, 10, -20, -10, -20)
+
+[node name="Symbol" type="Polygon2D" parent="VaultGold1"]
+color = Color(0.68, 0.48, 0.06, 0.85)
+polygon = PackedVector2Array(-6, -14, 6, -14, 6, 12, -6, 12)
+
+[node name="Shine" type="Polygon2D" parent="VaultGold1"]
+color = Color(1, 0.96, 0.7, 0.55)
+polygon = PackedVector2Array(-16, -24, 4, -24, 0, -8, -14, -8)
+
+[node name="Interaction" type="Area2D" parent="VaultGold1"]
+script = ExtResource("6")
+prompt_text = ">> GRAB GOLD <<"
+speaker_name = "Gold Bag"
+dialogue_lines = PackedStringArray("You grab a heavy bag of gold coins!")
+one_time_flag = "bank_gold_bag_1"
+reward_coins = 3
+reward_message = "Gold bag secured! +3 coins."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VaultGold1/Interaction"]
+shape = SubResource("1")
+
+[node name="VaultGold2" type="Node2D" parent="."]
+position = Vector2(120, 80)
+
+[node name="Glow" type="Polygon2D" parent="VaultGold2"]
+z_index = -1
+color = Color(1, 0.85, 0.2, 0.22)
+polygon = PackedVector2Array(-60, -44, 0, -64, 60, -44, 64, 20, 0, 64, -64, 20)
+
+[node name="Visual" type="Polygon2D" parent="VaultGold2"]
+color = Color(0.94, 0.78, 0.18, 1)
+polygon = PackedVector2Array(-26, -20, -18, -28, 18, -28, 26, -20, 30, 18, 22, 26, -22, 26, -30, 18)
+
+[node name="Tie" type="Polygon2D" parent="VaultGold2"]
+color = Color(0.72, 0.52, 0.12, 1)
+polygon = PackedVector2Array(-12, -28, 12, -28, 10, -20, -10, -20)
+
+[node name="Symbol" type="Polygon2D" parent="VaultGold2"]
+color = Color(0.68, 0.48, 0.06, 0.85)
+polygon = PackedVector2Array(-6, -14, 6, -14, 6, 12, -6, 12)
+
+[node name="Shine" type="Polygon2D" parent="VaultGold2"]
+color = Color(1, 0.96, 0.7, 0.55)
+polygon = PackedVector2Array(-16, -24, 4, -24, 0, -8, -14, -8)
+
+[node name="Interaction" type="Area2D" parent="VaultGold2"]
+script = ExtResource("6")
+prompt_text = ">> GRAB GOLD <<"
+speaker_name = "Gold Bag"
+dialogue_lines = PackedStringArray("Another bag of gold! The vault is paying out.")
+one_time_flag = "bank_gold_bag_2"
+reward_coins = 3
+reward_message = "Second gold bag! +3 coins."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VaultGold2/Interaction"]
+shape = SubResource("1")
+
+[node name="VaultGold3" type="Node2D" parent="."]
+position = Vector2(0, -20)
+
+[node name="Glow" type="Polygon2D" parent="VaultGold3"]
+z_index = -1
+color = Color(1, 0.85, 0.2, 0.22)
+polygon = PackedVector2Array(-60, -44, 0, -64, 60, -44, 64, 20, 0, 64, -64, 20)
+
+[node name="Visual" type="Polygon2D" parent="VaultGold3"]
+color = Color(0.94, 0.78, 0.18, 1)
+polygon = PackedVector2Array(-26, -20, -18, -28, 18, -28, 26, -20, 30, 18, 22, 26, -22, 26, -30, 18)
+
+[node name="Tie" type="Polygon2D" parent="VaultGold3"]
+color = Color(0.72, 0.52, 0.12, 1)
+polygon = PackedVector2Array(-12, -28, 12, -28, 10, -20, -10, -20)
+
+[node name="Symbol" type="Polygon2D" parent="VaultGold3"]
+color = Color(0.68, 0.48, 0.06, 0.85)
+polygon = PackedVector2Array(-6, -14, 6, -14, 6, 12, -6, 12)
+
+[node name="Shine" type="Polygon2D" parent="VaultGold3"]
+color = Color(1, 0.96, 0.7, 0.55)
+polygon = PackedVector2Array(-16, -24, 4, -24, 0, -8, -14, -8)
+
+[node name="Interaction" type="Area2D" parent="VaultGold3"]
+script = ExtResource("6")
+prompt_text = ">> GRAB GOLD <<"
+speaker_name = "Gold Bag"
+dialogue_lines = PackedStringArray("The last bag! You cleaned out the vault!")
+one_time_flag = "bank_gold_bag_3"
+reward_coins = 4
+reward_message = "Vault cleaned out! +4 coins."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VaultGold3/Interaction"]
+shape = SubResource("1")
+
+[node name="ArrowGuide" type="Node2D" parent="."]
+position = Vector2(0, 80)
+
+[node name="Arrow1" type="Polygon2D" parent="ArrowGuide"]
+color = Color(1, 0.85, 0.2, 0.35)
+polygon = PackedVector2Array(-14, 12, 14, 12, 0, -12)
+
+[node name="Arrow2" type="Polygon2D" parent="ArrowGuide"]
+position = Vector2(0, -30)
+color = Color(1, 0.85, 0.2, 0.28)
+polygon = PackedVector2Array(-14, 12, 14, 12, 0, -12)
+
+[node name="Arrow3" type="Polygon2D" parent="ArrowGuide"]
+position = Vector2(0, -60)
+color = Color(1, 0.85, 0.2, 0.2)
+polygon = PackedVector2Array(-14, 12, 14, 12, 0, -12)
+
+[node name="DarkOverlay" type="Node2D" parent="."]
+script = ExtResource("7")
+darkness_color = Color(0, 0, 0.02, 0.45)
+light_radius = 220.0
+light_falloff = 130.0
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("2")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("3")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("3")

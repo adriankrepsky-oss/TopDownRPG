@@ -1,10 +1,14 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ShopStand.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/market_background.png" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/MissionFailureZone.tscn" id="6"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(690, 40)
@@ -12,26 +16,38 @@ size = Vector2(690, 40)
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(40, 1030)
 
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(150, 70)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(180, 64)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(110, 172)
+
+[sub_resource type="CircleShape2D" id="6"]
+radius = 34.0
+
 [node name="MarketCrossroads" type="Node2D"]
 script = ExtResource("1")
 room_id = "market_crossroads"
-room_name = "Crossroads Bazaar"
-navigation_hint = "Portal lanes split the city. Buy what you need before the harder rooms begin."
+room_name = "Market Square"
+navigation_hint = "Use the market shops if you need them, then climb into the jeweler house and leave across the roof without waking the family."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("5")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("8")
+style = "market_house"
 
 [node name="WarmWash" type="Polygon2D" parent="."]
 z_index = 1
 color = Color(1, 0.88, 0.54, 0.08)
 polygon = PackedVector2Array(-700, -520, -260, -420, 120, -360, 520, -400, 700, -520, 700, -620, -700, -620)
 
-[node name="SquareGlow" type="Polygon2D" parent="."]
-position = Vector2(0, 30)
-z_index = 1
-color = Color(0.8, 0.92, 1, 0.12)
-polygon = PackedVector2Array(0, -120, 90, -64, 130, 0, 90, 70, 0, 126, -90, 70, -130, 0, -90, -64)
+[node name="HouseGlow" type="Polygon2D" parent="."]
+position = Vector2(74, -184)
+z_index = 2
+color = Color(1, 0.9, 0.52, 0.14)
+polygon = PackedVector2Array(-220, -144, 200, -144, 246, -32, 226, 130, -176, 130, -220, 24)
 
 [node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
 outer_extent = Vector2(700, 560)
@@ -91,6 +107,60 @@ unique_purchase = true
 sold_out_flag = "shop_sun_lance_bought"
 success_message = "Bought Sun Lance."
 
+[node name="FamilySightHall" parent="." instance=ExtResource("6")]
+position = Vector2(62, -120)
+size = Vector2(198, 92)
+active_until_flag = "quest_market_contract_built"
+failure_message = "You cross the lit hall and someone inside wakes up. The whole market hears it."
+tint = Color(1, 0.2, 0.16, 0.14)
+
+[node name="FamilySightBed" parent="." instance=ExtResource("6")]
+position = Vector2(172, -214)
+size = Vector2(120, 88)
+active_until_flag = "quest_market_contract_built"
+failure_message = "You get too close to the sleeping family. The theft is over before you can run."
+tint = Color(1, 0.2, 0.16, 0.1)
+
+[node name="Sera" type="Node2D" parent="."]
+position = Vector2(-324, 254)
+
+[node name="Body" type="Polygon2D" parent="Sera"]
+position = Vector2(0, 16)
+color = Color(0.28, 0.18, 0.34, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
+
+[node name="Head" type="Polygon2D" parent="Sera"]
+position = Vector2(0, -18)
+color = Color(0.96, 0.82, 0.68, 1)
+polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
+
+[node name="Interactable" type="Area2D" parent="Sera"]
+script = ExtResource("7")
+prompt_text = "Talk"
+speaker_name = "Sera"
+dialogue_lines = PackedStringArray("The jewelry house hangs over the market on the upper side.", "Balcony in, cabinet, roofline out. Stay off the bright hall or the family wakes up.")
+repeat_dialogue_lines = PackedStringArray("Once you are inside, keep to the edges and do not cut through the light.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sera/Interactable"]
+shape = SubResource("6")
+
+[node name="SleepingFamily" type="Node2D" parent="."]
+position = Vector2(172, -214)
+
+[node name="Bed" type="Polygon2D" parent="SleepingFamily"]
+color = Color(0.48, 0.4, 0.34, 0.92)
+polygon = PackedVector2Array(-74, -28, 74, -28, 74, 28, -74, 28)
+
+[node name="SleeperA" type="Polygon2D" parent="SleepingFamily"]
+position = Vector2(-20, 0)
+color = Color(0.92, 0.8, 0.68, 0.9)
+polygon = PackedVector2Array(0, -12, 16, -6, 18, 6, 10, 16, -10, 16, -18, 6, -16, -6)
+
+[node name="SleeperB" type="Polygon2D" parent="SleepingFamily"]
+position = Vector2(28, 0)
+color = Color(0.92, 0.8, 0.68, 0.9)
+polygon = PackedVector2Array(0, -12, 16, -6, 18, 6, 10, 16, -10, 16, -18, 6, -16, -6)
+
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
@@ -98,6 +168,25 @@ position = Vector2(0, 374)
 
 [node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(120, -374)
+
+[node name="spawn_from_jeweler" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(80, -30)
+
+[node name="spawn_from_store" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 200)
+
+[node name="JewelerDoor" parent="." instance=ExtResource("9")]
+position = Vector2(80, -50)
+target_room_id = "market_jeweler_int"
+target_spawn_id = "spawn_from_door"
+label_text = "Jeweler"
+required_flag = "market_crossroads_complete"
+
+[node name="StoreDoor" parent="." instance=ExtResource("9")]
+position = Vector2(0, 180)
+target_room_id = "market_store_int"
+target_spawn_id = "spawn_from_door"
+label_text = "Store"
 
 [node name="Colliders" type="Node2D" parent="."]
 
@@ -136,3 +225,21 @@ position = Vector2(635, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
 shape = SubResource("2")
+
+[node name="BalconyBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-4, -88)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/BalconyBlock"]
+shape = SubResource("3")
+
+[node name="BedroomBlock" type="StaticBody2D" parent="Colliders"]
+position = Vector2(146, -208)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/BedroomBlock"]
+shape = SubResource("4")
+
+[node name="HallWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-168, -170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/HallWall"]
+shape = SubResource("5")

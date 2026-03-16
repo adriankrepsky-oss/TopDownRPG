@@ -65,6 +65,12 @@ func _ready() -> void:
 		queue_free()
 		return
 
+	var level_number := GameState.get_level_number(GameState.current_room_id)
+	if level_number > 0 and level_number <= 10:
+		_spawn_replacement_slimes(level_number)
+		queue_free()
+		return
+
 	add_to_group("enemy")
 	add_to_group("boss")
 	rng.randomize()
@@ -373,6 +379,32 @@ func _summon_minions() -> void:
 		minion.add_to_group("boss_minion")
 
 
+func _spawn_replacement_slimes(level_number: int) -> void:
+	if get_parent() == null:
+		return
+
+	var spawn_total := 2 if level_number <= 5 else 3
+	var base_hp := 2 if level_number <= 5 else 3
+	var base_speed := 78.0 if level_number <= 5 else 92.0
+	var base_detection := 210.0 if level_number <= 5 else 250.0
+	var base_coin_reward := 2 if level_number <= 5 else 3
+
+	for index in range(spawn_total):
+		var angle := TAU * float(index) / float(maxi(spawn_total, 1))
+		var offset := Vector2.RIGHT.rotated(angle) * 88.0
+		var minion: Node = SLIME_SCENE.instantiate()
+		if minion is Slime:
+			var slime := minion as Slime
+			slime.max_hp = base_hp
+			slime.move_speed = base_speed
+			slime.detection_radius = base_detection
+			slime.coin_reward = base_coin_reward
+			slime.saved_enemy_id = "" if saved_enemy_id.is_empty() else "%s_replacement_%d_defeated" % [saved_enemy_id, index]
+		if minion is Node2D:
+			(minion as Node2D).global_position = global_position + offset
+		get_parent().call_deferred("add_child", minion)
+
+
 func _get_active_minion_count() -> int:
 	var count := 0
 	for node in get_tree().get_nodes_in_group("boss_minion"):
@@ -410,7 +442,10 @@ func _drop_coin_reward() -> void:
 	var pickup := COIN_PICKUP_SCENE.instantiate()
 	get_parent().add_child(pickup)
 	pickup.global_position = global_position
-	pickup.amount = coin_reward
+	var reward := coin_reward
+	if GameState.is_beginner_level(GameState.current_room_id):
+		reward += 2
+	pickup.amount = reward
 
 
 func _grant_power_reward() -> void:
@@ -426,6 +461,29 @@ func _grant_power_reward() -> void:
 
 func _apply_difficulty_scaling() -> void:
 	var difficulty := GameState.get_room_difficulty_multiplier(GameState.current_room_id)
+	if difficulty < 1.0:
+		max_hp = maxi(4, int(round(max_hp * difficulty)))
+		move_speed *= lerpf(0.76, 1.0, difficulty)
+		detection_radius *= lerpf(0.76, 1.0, difficulty)
+		preferred_distance -= (1.0 - difficulty) * 18.0
+		projectile_speed *= lerpf(0.74, 1.0, difficulty)
+		projectile_count = maxi(1, int(round(projectile_count * lerpf(0.6, 1.0, difficulty))))
+		ring_projectile_count = maxi(4, int(round(ring_projectile_count * lerpf(0.6, 1.0, difficulty))))
+		shoot_interval *= lerpf(1.55, 1.0, difficulty)
+		ring_interval *= lerpf(1.45, 1.0, difficulty)
+		charge_interval *= lerpf(1.4, 1.0, difficulty)
+		teleport_interval *= lerpf(1.35, 1.0, difficulty)
+		summon_interval *= lerpf(1.35, 1.0, difficulty)
+		bomb_interval *= lerpf(1.4, 1.0, difficulty)
+		bomb_speed *= lerpf(0.74, 1.0, difficulty)
+		bomb_explosion_radius *= lerpf(0.82, 1.0, difficulty)
+		charge_speed *= lerpf(0.74, 1.0, difficulty)
+		bombs_per_volley = maxi(1, int(round(bombs_per_volley * lerpf(0.55, 1.0, difficulty))))
+		summon_count = maxi(1, int(round(summon_count * lerpf(0.7, 1.0, difficulty))))
+		summon_minion_hp = maxi(1, int(round(summon_minion_hp * lerpf(0.7, 1.0, difficulty))))
+		summon_minion_speed *= lerpf(0.76, 1.0, difficulty)
+		return
+
 	max_hp = maxi(max_hp, int(round(max_hp * lerpf(1.0, difficulty, 0.72))))
 	move_speed *= lerpf(1.0, difficulty, 0.42)
 	detection_radius *= lerpf(1.0, difficulty, 0.26)

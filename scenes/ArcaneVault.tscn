@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/RewardPedestal.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="6"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="7"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="99"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(808, 40)
@@ -29,9 +30,9 @@ room_id = "arcane_vault"
 room_name = "Arcane Vault"
 navigation_hint = "The vault now reads like a real destination: defeat the warden, then claim the forge reward and take the lower portal back."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("7")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("99")
+style = "arcane_vault"
 
 [node name="VaultTint" type="Polygon2D" parent="."]
 z_index = 1

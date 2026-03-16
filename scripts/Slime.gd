@@ -100,11 +100,20 @@ func _drop_coin_reward() -> void:
 	var pickup := COIN_PICKUP_SCENE.instantiate()
 	get_parent().add_child(pickup)
 	pickup.global_position = global_position
-	pickup.amount = coin_reward
+	var reward := coin_reward
+	if GameState.is_beginner_level(GameState.current_room_id):
+		reward += 1
+	pickup.amount = reward
 
 
 func _apply_difficulty_scaling() -> void:
 	var difficulty := GameState.get_room_difficulty_multiplier(GameState.current_room_id)
+	if difficulty < 1.0:
+		max_hp = maxi(1, int(round(max_hp * difficulty)))
+		move_speed *= lerpf(0.7, 1.0, difficulty)
+		detection_radius *= lerpf(0.72, 1.0, difficulty)
+		return
+
 	max_hp = maxi(max_hp, int(round(max_hp * lerpf(1.0, difficulty, 0.65))))
 	move_speed *= lerpf(1.0, difficulty, 0.45)
 	detection_radius *= lerpf(1.0, difficulty, 0.3)

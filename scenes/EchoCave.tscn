@@ -1,12 +1,14 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
-[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="6"]
-[ext_resource type="PackedScene" path="res://scenes/CrystalBoss.tscn" id="7"]
+[ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forest_background.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/Chicken.tscn" id="7"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="10"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(808, 40)
@@ -20,22 +22,22 @@ size = Vector2(280, 100)
 [node name="EchoCave" type="Node2D"]
 script = ExtResource("1")
 room_id = "echo_cave"
-room_name = "Echo Cave"
-navigation_hint = "The cave opens into a cold chamber. Clear it and take the upper portal."
+room_name = "Henfield Farm"
+navigation_hint = "Tomas needs his eggs and chickens back. Work the yard, then report to him."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("6")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("9")
+style = "farm"
 
-[node name="CaveTint" type="Polygon2D" parent="."]
+[node name="FieldWash" type="Polygon2D" parent="."]
 z_index = 1
-color = Color(0.08, 0.14, 0.22, 0.58)
+color = Color(0.16, 0.24, 0.16, 0.32)
 polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
 
-[node name="CrystalGlow" type="Polygon2D" parent="."]
+[node name="BarnPad" type="Polygon2D" parent="."]
 position = Vector2(0, -82)
 z_index = 2
-color = Color(0.54, 0.92, 1, 0.14)
+color = Color(0.72, 0.48, 0.28, 0.18)
 polygon = PackedVector2Array(0, -170, 130, -86, 182, 0, 130, 104, 0, 182, -130, 104, -182, 0, -130, -86)
 
 [node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
@@ -62,34 +64,58 @@ glow_color = Color(0.58, 0.94, 1, 0.22)
 position = Vector2(-250, 120)
 saved_flag = "berry_echo_cave_collected"
 
-[node name="SlimeA" parent="." instance=ExtResource("3")]
-position = Vector2(-160, 118)
-max_hp = 3
-move_speed = 86.0
-detection_radius = 240.0
-saved_enemy_id = "enemy_echo_cave_slime_a_defeated"
-coin_reward = 2
+[node name="ChickenWhite" parent="." instance=ExtResource("7")]
+position = Vector2(-170, 96)
+completion_flag = "quest_echo_chicken_white"
+catch_message = "White chicken caught. +1 coin."
 
-[node name="SlimeB" parent="." instance=ExtResource("3")]
+[node name="ChickenBrown" parent="." instance=ExtResource("7")]
 position = Vector2(168, 112)
-max_hp = 3
-move_speed = 90.0
-detection_radius = 250.0
-saved_enemy_id = "enemy_echo_cave_slime_b_defeated"
-coin_reward = 2
+completion_flag = "quest_echo_chicken_brown"
+catch_message = "Brown chicken caught. +1 coin."
 
-[node name="CrystalBoss" parent="." instance=ExtResource("7")]
-position = Vector2(0, -100)
-reward_power_id = "blink_dash"
-coin_reward = 4
+[node name="FarmerTomas" type="Node2D" parent="."]
+position = Vector2(0, -182)
+
+[node name="Body" type="Polygon2D" parent="FarmerTomas"]
+position = Vector2(0, 16)
+color = Color(0.46, 0.34, 0.18, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
+
+[node name="Head" type="Polygon2D" parent="FarmerTomas"]
+position = Vector2(0, -18)
+color = Color(0.96, 0.82, 0.68, 1)
+polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
+
+[node name="Interactable" type="Area2D" parent="FarmerTomas"]
+script = ExtResource("8")
+prompt_text = "Talk"
+speaker_name = "Farmer Tomas"
+dialogue_lines = PackedStringArray("The hens are gone, the eggs are scattered, and I am losing the whole morning.", "Bring the yard back to me and I will owe you.")
+repeat_dialogue_lines = PackedStringArray("Eggs first, then the runners. They always break for the fence.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FarmerTomas/Interactable"]
+shape = SubResource("3")
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="spawn_from_prev" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(0, 374)
 
+[node name="spawn_from_rift" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, -286)
+
 [node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(0, -374)
+
+[node name="spawn_from_interior" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(462, -10)
+
+[node name="BarnDoor" parent="." instance=ExtResource("10")]
+position = Vector2(462, -30)
+target_room_id = "farm_barn_int"
+target_spawn_id = "spawn_from_door"
+label_text = "Barn"
 
 [node name="Colliders" type="Node2D" parent="."]
 

@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighter/Icicle.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_icicle"]
+size = Vector2(12, 6)
+
+[node name="Icicle" type="Area2D"]
+script = ExtResource("1")
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_icicle")
+
+[node name="IcicleBody" type="Polygon2D" parent="."]
+color = Color(0.6, 0.85, 1.0, 0.9)
+polygon = PackedVector2Array(-8, -3, 8, 0, -8, 3)
+
+[node name="IcicleGlow" type="Polygon2D" parent="."]
+color = Color(0.5, 0.75, 1.0, 0.3)
+polygon = PackedVector2Array(-10, -5, 12, 0, -10, 5)

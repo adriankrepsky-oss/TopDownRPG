@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="5"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="99"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(808, 40)
@@ -30,9 +31,9 @@ room_id = "forge_hall"
 room_name = "Forge Hall"
 navigation_hint = "Warm light, live metal, and visible portals. Clear the hall, then take the upper portal into the vault."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("5")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("99")
+style = "forge_hall"
 
 [node name="WarmTint" type="Polygon2D" parent="."]
 z_index = 1

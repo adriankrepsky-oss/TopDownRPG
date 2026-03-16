@@ -1,0 +1,85 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="5"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(500, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 420)
+
+[sub_resource type="CircleShape2D" id="3"]
+radius = 34.0
+
+[node name="VillageHouseInt" type="Node2D"]
+script = ExtResource("1")
+room_id = "village_house_int"
+room_name = "Village House"
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("2")
+style = "house_interior"
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(460, 380)
+inner_extent = Vector2(400, 326)
+top_gap_width = 0.0
+bottom_gap_width = 180.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.02, 0.85)
+
+[node name="ExitDoor" parent="." instance=ExtResource("3")]
+position = Vector2(0, 340)
+target_room_id = "forest_path"
+target_spawn_id = "spawn_from_interior"
+label_text = "Exit"
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_door" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 280)
+
+[node name="OldWoman" type="Node2D" parent="."]
+position = Vector2(-40, -60)
+
+[node name="Body" type="Polygon2D" parent="OldWoman"]
+color = Color(0.62, 0.48, 0.62, 1)
+polygon = PackedVector2Array(-14, -8, 14, -8, 16, 24, -16, 24)
+
+[node name="Head" type="Polygon2D" parent="OldWoman"]
+color = Color(0.84, 0.74, 0.62, 1)
+polygon = PackedVector2Array(-10, -24, 10, -24, 12, -6, -12, -6)
+
+[node name="Interaction" type="Area2D" parent="OldWoman"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Old Woman"
+dialogue_lines = PackedStringArray("Bless you for visiting, dear.", "Marta used to bring me flowers every morning. I hope she is alright.")
+repeat_dialogue_lines = PackedStringArray("Be careful out there, young one.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OldWoman/Interaction"]
+shape = SubResource("3")
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(0, -360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWall"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(440, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")

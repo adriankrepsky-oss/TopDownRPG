@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/SkyBoss.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="5"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forgehall_background.png" id="6"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="99"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(808, 40)
@@ -22,9 +23,9 @@ room_id = "sky_keep"
 room_name = "Sky Keep"
 navigation_hint = "The final portal brought you above the clouds. This is the hardest room in the run."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("6")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("99")
+style = "sky_keep"
 
 [node name="StormTint" type="Polygon2D" parent="."]
 z_index = 1

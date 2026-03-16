@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://scenes/GunPickup.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="7"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/forest_background.png" id="8"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="10"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(700, 40)
@@ -24,12 +26,12 @@ radius = 34.0
 [node name="ForestPath" type="Node2D"]
 script = ExtResource("1")
 room_id = "forest_path"
-room_name = "Lakeside Quarter"
-navigation_hint = "The first combat district is larger now. Clear the slime, talk to the ranger, then take the upper portal."
+room_name = "Willow Village"
+navigation_hint = "Marta is trapped near the square. Secure the barricades, kill the creature, and get back to her."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("8")
-scale = Vector2(2.2, 2.2)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("9")
+style = "village"
 
 [node name="LakeSheen" type="Polygon2D" parent="."]
 position = Vector2(-280, -78)
@@ -89,30 +91,30 @@ saved_flag = "slime_blaster_collected"
 appear_flag = "enemy_forest_slime_defeated"
 pickup_message = "Picked up the Slime Blaster. Aim with the mouse and shoot with left click."
 
-[node name="Ranger" type="Node2D" parent="."]
+[node name="Marta" type="Node2D" parent="."]
 position = Vector2(-126, -392)
 
-[node name="Body" type="Polygon2D" parent="Ranger"]
+[node name="Body" type="Polygon2D" parent="Marta"]
 position = Vector2(0, 16)
-color = Color(0.28, 0.42, 0.72, 1)
+color = Color(0.46, 0.28, 0.54, 1)
 polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
 
-[node name="Head" type="Polygon2D" parent="Ranger"]
+[node name="Head" type="Polygon2D" parent="Marta"]
 position = Vector2(0, -18)
 color = Color(0.96, 0.82, 0.68, 1)
 polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
 
-[node name="Interactable" type="Area2D" parent="Ranger"]
+[node name="Interactable" type="Area2D" parent="Marta"]
 script = ExtResource("5")
 prompt_text = "Talk"
-speaker_name = "Ranger"
-dialogue_lines = PackedStringArray("You made it through the quarter.", "Take this Forest Token. The city portals will now stay open for you.")
-repeat_dialogue_lines = PackedStringArray("Stay near the campfire if you need a moment.", "The upper portal advances the run.")
+speaker_name = "Marta"
+dialogue_lines = PackedStringArray("I heard the creatures scratching under the shutters all morning.", "If you clear the square, I can finally move again.")
+repeat_dialogue_lines = PackedStringArray("I am still here. Do not leave the square half-secured.", "When it is safe, come back and tell me.")
 one_time_flag = "npc_forest_ranger_rewarded"
 reward_item_id = "forest_token"
 reward_message = "Received Forest Token."
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ranger/Interactable"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Marta/Interactable"]
 shape = SubResource("4")
 
 [node name="SpawnPoints" type="Node2D" parent="."]
@@ -122,6 +124,15 @@ position = Vector2(120, 426)
 
 [node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(136, -426)
+
+[node name="spawn_from_interior" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(-152, -310)
+
+[node name="VillageHouseDoor" parent="." instance=ExtResource("10")]
+position = Vector2(-152, -330)
+target_room_id = "village_house_int"
+target_spawn_id = "spawn_from_door"
+label_text = "House"
 
 [node name="Colliders" type="Node2D" parent="."]
 

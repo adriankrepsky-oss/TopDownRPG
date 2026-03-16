@@ -1,11 +1,12 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/BerryPickup.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="3"]
+[ext_resource type="Script" path="res://scripts/Interactable.gd" id="5"]
 [ext_resource type="CompressedTexture2D" path="res://assets/kenney/roguelike/bloom_background.png" id="6"]
+[ext_resource type="Script" path="res://scripts/StylizedRoomArt.gd" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/DoorPortal.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(690, 40)
@@ -13,35 +14,41 @@ size = Vector2(690, 40)
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(40, 1030)
 
-[sub_resource type="RectangleShape2D" id="3"]
-size = Vector2(360, 420)
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(170, 64)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(80, 150)
+
+[sub_resource type="CircleShape2D" id="6"]
+radius = 34.0
 
 [node name="BloomMarsh" type="Node2D"]
 script = ExtResource("1")
 room_id = "bloom_marsh"
-room_name = "Bloom Marsh"
-navigation_hint = "The marsh is dense and wet. Stay on the raised road and keep moving."
+room_name = "Bandit House"
+navigation_hint = "Break in through the side, clear the robbers upstairs, and secure the family room."
 
-[node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("6")
-scale = Vector2(2.05, 2.05)
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("7")
+style = "bandit_house"
 
-[node name="Mist" type="Polygon2D" parent="."]
+[node name="NightWash" type="Polygon2D" parent="."]
 z_index = 1
-color = Color(0.72, 0.9, 0.78, 0.08)
-polygon = PackedVector2Array(-700, -180, -420, -260, -40, -240, 320, -180, 700, -120, 700, 140, 320, 220, -40, 210, -420, 160, -700, 70)
+color = Color(0.16, 0.18, 0.24, 0.34)
+polygon = PackedVector2Array(-960, -720, 960, -720, 960, 720, -960, 720)
 
-[node name="MarshGlow" type="Polygon2D" parent="."]
-position = Vector2(-280, -70)
-z_index = 1
-color = Color(0.74, 0.96, 0.82, 0.12)
-polygon = PackedVector2Array(-140, -180, -40, -220, 80, -200, 160, -120, 170, 18, 120, 132, 40, 188, -70, 196, -160, 136, -190, 16, -180, -96)
+[node name="HouseGlow" type="Polygon2D" parent="."]
+position = Vector2(74, -70)
+z_index = 2
+color = Color(1, 0.78, 0.42, 0.12)
+polygon = PackedVector2Array(-240, -154, 170, -154, 230, -34, 210, 138, -124, 138, -240, 36)
 
-[node name="BoundaryOverlay" parent="." instance=ExtResource("5")]
+[node name="BoundaryOverlay" parent="." instance=ExtResource("3")]
 outer_extent = Vector2(700, 560)
 inner_extent = Vector2(635, 515)
 top_gap_width = 220.0
-top_gap_offset = 130.0
+top_gap_offset = 120.0
 bottom_gap_width = 220.0
 bottom_gap_offset = 0.0
 fill_color = Color(0.01, 0.01, 0.02, 0.82)
@@ -54,38 +61,50 @@ portal_color = Color(0.44, 0.84, 1, 1)
 glow_color = Color(0.44, 0.84, 1, 0.22)
 
 [node name="PortalForward" parent="." instance=ExtResource("2")]
-position = Vector2(130, -478)
+position = Vector2(120, -478)
 target_mode = "next_main"
 portal_color = Color(0.52, 1, 0.66, 1)
 glow_color = Color(0.52, 1, 0.66, 0.22)
 
-[node name="BerryPickup" parent="." instance=ExtResource("4")]
-position = Vector2(-64, 92)
-saved_flag = "berry_bloom_marsh_collected"
+[node name="Ivo" type="Node2D" parent="."]
+position = Vector2(-326, 286)
 
-[node name="SlimeA" parent="." instance=ExtResource("3")]
-position = Vector2(-58, 54)
-max_hp = 3
-move_speed = 88.0
-detection_radius = 240.0
-saved_enemy_id = "enemy_bloom_marsh_slime_a_defeated"
-coin_reward = 2
+[node name="Body" type="Polygon2D" parent="Ivo"]
+position = Vector2(0, 16)
+color = Color(0.22, 0.28, 0.18, 1)
+polygon = PackedVector2Array(-14, -18, 14, -18, 18, 22, -18, 22)
 
-[node name="SlimeB" parent="." instance=ExtResource("3")]
-position = Vector2(110, -46)
-max_hp = 3
-move_speed = 90.0
-detection_radius = 250.0
-saved_enemy_id = "enemy_bloom_marsh_slime_b_defeated"
-coin_reward = 2
+[node name="Head" type="Polygon2D" parent="Ivo"]
+position = Vector2(0, -18)
+color = Color(0.96, 0.82, 0.68, 1)
+polygon = PackedVector2Array(0, -14, 12, -8, 14, 4, 8, 14, -8, 14, -14, 4, -12, -8)
 
-[node name="SlimeC" parent="." instance=ExtResource("3")]
-position = Vector2(-208, -132)
-max_hp = 4
-move_speed = 96.0
-detection_radius = 260.0
-saved_enemy_id = "enemy_bloom_marsh_slime_c_defeated"
-coin_reward = 2
+[node name="Interactable" type="Area2D" parent="Ivo"]
+script = ExtResource("5")
+prompt_text = "Talk"
+speaker_name = "Ivo"
+dialogue_lines = PackedStringArray("The robbers are all inside the house! They locked themselves in there.", "You need to go IN through the door and take them out. Be careful, it's dark in there!")
+repeat_dialogue_lines = PackedStringArray("Go through the door into the house! The robbers are hiding inside.")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ivo/Interactable"]
+shape = SubResource("6")
+
+[node name="FamilyRoom" type="Node2D" parent="."]
+position = Vector2(244, -184)
+
+[node name="Bed" type="Polygon2D" parent="FamilyRoom"]
+color = Color(0.46, 0.38, 0.32, 0.9)
+polygon = PackedVector2Array(-82, -28, 82, -28, 82, 28, -82, 28)
+
+[node name="SleeperA" type="Polygon2D" parent="FamilyRoom"]
+position = Vector2(-26, 0)
+color = Color(0.92, 0.8, 0.68, 0.92)
+polygon = PackedVector2Array(0, -12, 16, -6, 18, 6, 10, 16, -10, 16, -18, 6, -16, -6)
+
+[node name="SleeperB" type="Polygon2D" parent="FamilyRoom"]
+position = Vector2(28, 0)
+color = Color(0.92, 0.8, 0.68, 0.92)
+polygon = PackedVector2Array(0, -12, 16, -6, 18, 6, 10, 16, -10, 16, -18, 6, -16, -6)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -93,7 +112,16 @@ coin_reward = 2
 position = Vector2(0, 374)
 
 [node name="spawn_from_next" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(130, -374)
+position = Vector2(120, -374)
+
+[node name="spawn_from_interior" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(56, 120)
+
+[node name="BanditHouseDoor" parent="." instance=ExtResource("8")]
+position = Vector2(56, 100)
+target_room_id = "bandit_house_int"
+target_spawn_id = "spawn_from_door"
+label_text = "Enter House"
 
 [node name="Colliders" type="Node2D" parent="."]
 
@@ -133,8 +161,14 @@ position = Vector2(635, 0)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
 shape = SubResource("2")
 
-[node name="LakeBody" type="StaticBody2D" parent="Colliders"]
-position = Vector2(-290, -40)
+[node name="UpperDivider" type="StaticBody2D" parent="Colliders"]
+position = Vector2(78, -154)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/LakeBody"]
-shape = SubResource("3")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/UpperDivider"]
+shape = SubResource("4")
+
+[node name="SideShelf" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-196, 88)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SideShelf"]
+shape = SubResource("5")

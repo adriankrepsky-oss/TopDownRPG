@@ -1,0 +1,452 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighter/Arena.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="main_plat"]
+size = Vector2(600, 20)
+
+[sub_resource type="RectangleShape2D" id="side_plat"]
+size = Vector2(200, 16)
+
+[sub_resource type="RectangleShape2D" id="top_plat"]
+size = Vector2(150, 14)
+
+[sub_resource type="RectangleShape2D" id="kill_h"]
+size = Vector2(3000, 200)
+
+[sub_resource type="RectangleShape2D" id="kill_v"]
+size = Vector2(200, 2000)
+
+[node name="Arena" type="Node2D"]
+script = ExtResource("1")
+
+; === BACKGROUND LAYERS ===
+
+[node name="SkyTop" type="Polygon2D" parent="."]
+color = Color(0.04, 0.02, 0.12, 1)
+polygon = PackedVector2Array(-700, -400, 700, -400, 700, -150, -700, -150)
+
+[node name="SkyMid" type="Polygon2D" parent="."]
+color = Color(0.08, 0.04, 0.2, 1)
+polygon = PackedVector2Array(-700, -150, 700, -150, 700, 50, -700, 50)
+
+[node name="SkyLow" type="Polygon2D" parent="."]
+color = Color(0.12, 0.06, 0.28, 1)
+polygon = PackedVector2Array(-700, 50, 700, 50, 700, 250, -700, 250)
+
+[node name="SkyBottom" type="Polygon2D" parent="."]
+color = Color(0.18, 0.08, 0.32, 1)
+polygon = PackedVector2Array(-700, 250, 700, 250, 700, 420, -700, 420)
+
+; === MOON ===
+
+[node name="Moon" type="Polygon2D" parent="."]
+position = Vector2(320, -240)
+color = Color(0.95, 0.92, 0.8, 0.9)
+polygon = PackedVector2Array(0, -40, 15, -37, 28, -28, 37, -15, 40, 0, 37, 15, 28, 28, 15, 37, 0, 40, -15, 37, -28, 28, -37, 15, -40, 0, -37, -15, -28, -28, -15, -37)
+
+[node name="MoonGlow" type="Polygon2D" parent="."]
+position = Vector2(320, -240)
+color = Color(0.6, 0.55, 0.9, 0.08)
+polygon = PackedVector2Array(0, -80, 30, -74, 56, -56, 74, -30, 80, 0, 74, 30, 56, 56, 30, 74, 0, 80, -30, 74, -56, 56, -74, 30, -80, 0, -74, -30, -56, -56, -30, -74)
+
+[node name="MoonGlowOuter" type="Polygon2D" parent="."]
+position = Vector2(320, -240)
+color = Color(0.5, 0.45, 0.85, 0.03)
+polygon = PackedVector2Array(0, -130, 50, -120, 92, -92, 120, -50, 130, 0, 120, 50, 92, 92, 50, 120, 0, 130, -50, 120, -92, 92, -120, 50, -130, 0, -120, -50, -92, -92, -50, -120)
+
+; === STARS ===
+
+[node name="Stars" type="Node2D" parent="."]
+
+[node name="S1" type="Polygon2D" parent="Stars"]
+position = Vector2(-520, -310)
+color = Color(1, 1, 1, 0.8)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S2" type="Polygon2D" parent="Stars"]
+position = Vector2(-380, -280)
+color = Color(1, 1, 0.9, 0.6)
+polygon = PackedVector2Array(-1.5, 0, 0, -1.5, 1.5, 0, 0, 1.5)
+
+[node name="S3" type="Polygon2D" parent="Stars"]
+position = Vector2(-200, -340)
+color = Color(0.8, 0.85, 1, 0.7)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S4" type="Polygon2D" parent="Stars"]
+position = Vector2(-50, -290)
+color = Color(1, 1, 1, 0.5)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S5" type="Polygon2D" parent="Stars"]
+position = Vector2(100, -350)
+color = Color(0.9, 0.9, 1, 0.9)
+polygon = PackedVector2Array(-2, 0, 0, -2, 2, 0, 0, 2)
+
+[node name="S6" type="Polygon2D" parent="Stars"]
+position = Vector2(200, -300)
+color = Color(1, 0.95, 0.85, 0.6)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S7" type="Polygon2D" parent="Stars"]
+position = Vector2(450, -330)
+color = Color(0.85, 0.9, 1, 0.7)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S8" type="Polygon2D" parent="Stars"]
+position = Vector2(550, -280)
+color = Color(1, 1, 1, 0.55)
+polygon = PackedVector2Array(-1.5, 0, 0, -1.5, 1.5, 0, 0, 1.5)
+
+[node name="S9" type="Polygon2D" parent="Stars"]
+position = Vector2(-450, -200)
+color = Color(1, 1, 0.95, 0.4)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S10" type="Polygon2D" parent="Stars"]
+position = Vector2(-300, -180)
+color = Color(0.9, 0.85, 1, 0.5)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S11" type="Polygon2D" parent="Stars"]
+position = Vector2(0, -220)
+color = Color(1, 1, 1, 0.65)
+polygon = PackedVector2Array(-1.5, 0, 0, -1.5, 1.5, 0, 0, 1.5)
+
+[node name="S12" type="Polygon2D" parent="Stars"]
+position = Vector2(380, -200)
+color = Color(1, 0.95, 0.9, 0.45)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S13" type="Polygon2D" parent="Stars"]
+position = Vector2(-550, -350)
+color = Color(0.95, 1, 1, 0.75)
+polygon = PackedVector2Array(-2, 0, 0, -2, 2, 0, 0, 2)
+
+[node name="S14" type="Polygon2D" parent="Stars"]
+position = Vector2(500, -350)
+color = Color(1, 1, 0.85, 0.8)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+[node name="S15" type="Polygon2D" parent="Stars"]
+position = Vector2(-120, -260)
+color = Color(0.9, 0.9, 1, 0.55)
+polygon = PackedVector2Array(-1, -1, 1, -1, 1, 1, -1, 1)
+
+; === DISTANT MOUNTAINS (background silhouettes) ===
+
+[node name="MountainsFar" type="Polygon2D" parent="."]
+color = Color(0.06, 0.03, 0.15, 0.7)
+polygon = PackedVector2Array(-700, 300, -600, 120, -500, 180, -380, 60, -280, 150, -150, 30, -50, 130, 50, 50, 150, 140, 260, 20, 380, 100, 480, 40, 580, 130, 700, 80, 700, 300)
+
+[node name="MountainsNear" type="Polygon2D" parent="."]
+color = Color(0.08, 0.04, 0.18, 0.85)
+polygon = PackedVector2Array(-700, 300, -580, 180, -460, 230, -340, 140, -220, 210, -120, 120, 0, 190, 100, 130, 220, 200, 340, 110, 440, 180, 560, 100, 650, 170, 700, 150, 700, 300)
+
+; === ATMOSPHERIC MIST ===
+
+[node name="MistLow" type="Polygon2D" parent="."]
+color = Color(0.25, 0.15, 0.45, 0.06)
+polygon = PackedVector2Array(-700, 280, -500, 260, -300, 275, -100, 255, 100, 270, 300, 250, 500, 265, 700, 250, 700, 320, -700, 320)
+
+[node name="MistHigh" type="Polygon2D" parent="."]
+color = Color(0.3, 0.2, 0.5, 0.04)
+polygon = PackedVector2Array(-700, 100, -400, 85, -100, 95, 200, 80, 500, 90, 700, 75, 700, 130, -700, 130)
+
+; === MAIN PLATFORM ===
+
+[node name="MainPlatform" type="StaticBody2D" parent="."]
+position = Vector2(0, 200)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MainPlatform"]
+shape = SubResource("main_plat")
+one_way_collision = true
+
+[node name="UnderGlow" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.3, 0.2, 0.7, 0.08)
+polygon = PackedVector2Array(-280, 12, 280, 12, 240, 50, -240, 50)
+
+[node name="PlatformShadow" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.15, 0.1, 0.08, 1)
+polygon = PackedVector2Array(-304, -6, 304, -6, 308, 16, -308, 16)
+
+[node name="PlatformBody" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.28, 0.22, 0.18, 1)
+polygon = PackedVector2Array(-300, -10, 300, -10, 304, 12, -304, 12)
+
+[node name="StoneDetail1" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(-280, -4, -200, -4, -200, 8, -280, 8)
+
+[node name="StoneDetail2" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.32, 0.26, 0.2, 1)
+polygon = PackedVector2Array(-190, -2, -100, -2, -100, 6, -190, 6)
+
+[node name="StoneDetail3" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(-80, -4, 20, -4, 20, 8, -80, 8)
+
+[node name="StoneDetail4" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.32, 0.26, 0.2, 1)
+polygon = PackedVector2Array(40, -2, 150, -2, 150, 6, 40, 6)
+
+[node name="StoneDetail5" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(170, -4, 280, -4, 280, 8, 170, 8)
+
+[node name="PlatformTop" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.45, 0.35, 0.28, 1)
+polygon = PackedVector2Array(-300, -10, 300, -10, 300, -6, -300, -6)
+
+[node name="TopHighlight" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.55, 0.45, 0.35, 0.6)
+polygon = PackedVector2Array(-298, -10, 298, -10, 298, -8, -298, -8)
+
+[node name="GlowEdgeLeft" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(-304, -10, -300, -10, -300, 12, -304, 12)
+
+[node name="GlowEdgeRight" type="Polygon2D" parent="MainPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(300, -10, 304, -10, 304, 12, 300, 12)
+
+; === LEFT PLATFORM ===
+
+[node name="LeftPlatform" type="StaticBody2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+position = Vector2(-180, 60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftPlatform"]
+shape = SubResource("side_plat")
+one_way_collision = true
+
+[node name="UnderGlow" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.3, 0.2, 0.7, 0.07)
+polygon = PackedVector2Array(-85, 10, 85, 10, 70, 35, -70, 35)
+
+[node name="PlatformShadow" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.15, 0.1, 0.08, 1)
+polygon = PackedVector2Array(-104, -4, 104, -4, 106, 12, -106, 12)
+
+[node name="PlatformBody" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.28, 0.22, 0.18, 1)
+polygon = PackedVector2Array(-100, -8, 100, -8, 102, 10, -102, 10)
+
+[node name="StoneDetail1" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(-85, -2, -30, -2, -30, 6, -85, 6)
+
+[node name="StoneDetail2" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.32, 0.26, 0.2, 1)
+polygon = PackedVector2Array(-20, -3, 60, -3, 60, 5, -20, 5)
+
+[node name="PlatformTop" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.45, 0.35, 0.28, 1)
+polygon = PackedVector2Array(-100, -8, 100, -8, 100, -5, -100, -5)
+
+[node name="TopHighlight" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.55, 0.45, 0.35, 0.6)
+polygon = PackedVector2Array(-98, -8, 98, -8, 98, -6, -98, -6)
+
+[node name="GlowEdgeLeft" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(-102, -8, -100, -8, -100, 10, -102, 10)
+
+[node name="GlowEdgeRight" type="Polygon2D" parent="LeftPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(100, -8, 102, -8, 102, 10, 100, 10)
+
+; === RIGHT PLATFORM ===
+
+[node name="RightPlatform" type="StaticBody2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+position = Vector2(180, 60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightPlatform"]
+shape = SubResource("side_plat")
+one_way_collision = true
+
+[node name="UnderGlow" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.3, 0.2, 0.7, 0.07)
+polygon = PackedVector2Array(-85, 10, 85, 10, 70, 35, -70, 35)
+
+[node name="PlatformShadow" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.15, 0.1, 0.08, 1)
+polygon = PackedVector2Array(-104, -4, 104, -4, 106, 12, -106, 12)
+
+[node name="PlatformBody" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.28, 0.22, 0.18, 1)
+polygon = PackedVector2Array(-100, -8, 100, -8, 102, 10, -102, 10)
+
+[node name="StoneDetail1" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.32, 0.26, 0.2, 1)
+polygon = PackedVector2Array(-80, -2, -10, -2, -10, 6, -80, 6)
+
+[node name="StoneDetail2" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(0, -3, 85, -3, 85, 5, 0, 5)
+
+[node name="PlatformTop" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.45, 0.35, 0.28, 1)
+polygon = PackedVector2Array(-100, -8, 100, -8, 100, -5, -100, -5)
+
+[node name="TopHighlight" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.55, 0.45, 0.35, 0.6)
+polygon = PackedVector2Array(-98, -8, 98, -8, 98, -6, -98, -6)
+
+[node name="GlowEdgeLeft" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(-102, -8, -100, -8, -100, 10, -102, 10)
+
+[node name="GlowEdgeRight" type="Polygon2D" parent="RightPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(100, -8, 102, -8, 102, 10, 100, 10)
+
+; === TOP PLATFORM ===
+
+[node name="TopPlatform" type="StaticBody2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+position = Vector2(0, -80)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TopPlatform"]
+shape = SubResource("top_plat")
+one_way_collision = true
+
+[node name="UnderGlow" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.3, 0.2, 0.7, 0.06)
+polygon = PackedVector2Array(-60, 9, 60, 9, 45, 30, -45, 30)
+
+[node name="PlatformShadow" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.15, 0.1, 0.08, 1)
+polygon = PackedVector2Array(-79, -3, 79, -3, 81, 10, -81, 10)
+
+[node name="PlatformBody" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.28, 0.22, 0.18, 1)
+polygon = PackedVector2Array(-75, -7, 75, -7, 77, 8, -77, 8)
+
+[node name="StoneDetail1" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.24, 0.19, 0.15, 1)
+polygon = PackedVector2Array(-60, -2, -10, -2, -10, 5, -60, 5)
+
+[node name="StoneDetail2" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.32, 0.26, 0.2, 1)
+polygon = PackedVector2Array(0, -1, 60, -1, 60, 4, 0, 4)
+
+[node name="PlatformTop" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.45, 0.35, 0.28, 1)
+polygon = PackedVector2Array(-75, -7, 75, -7, 75, -4, -75, -4)
+
+[node name="TopHighlight" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.55, 0.45, 0.35, 0.6)
+polygon = PackedVector2Array(-73, -7, 73, -7, 73, -5, -73, -5)
+
+[node name="GlowEdgeLeft" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(-77, -7, -75, -7, -75, 8, -77, 8)
+
+[node name="GlowEdgeRight" type="Polygon2D" parent="TopPlatform"]
+color = Color(0.4, 0.3, 0.8, 0.2)
+polygon = PackedVector2Array(75, -7, 77, -7, 77, 8, 75, 8)
+
+; === DECORATIVE FLOATING CRYSTALS ===
+
+[node name="CrystalLeft" type="Polygon2D" parent="."]
+position = Vector2(-480, 100)
+color = Color(0.4, 0.3, 0.8, 0.15)
+polygon = PackedVector2Array(0, -18, 7, -5, 7, 5, 0, 18, -7, 5, -7, -5)
+
+[node name="CrystalLeftGlow" type="Polygon2D" parent="."]
+position = Vector2(-480, 100)
+color = Color(0.5, 0.35, 0.9, 0.05)
+polygon = PackedVector2Array(0, -28, 12, -8, 12, 8, 0, 28, -12, 8, -12, -8)
+
+[node name="CrystalRight" type="Polygon2D" parent="."]
+position = Vector2(480, 140)
+color = Color(0.4, 0.3, 0.8, 0.15)
+polygon = PackedVector2Array(0, -14, 5, -4, 5, 4, 0, 14, -5, 4, -5, -4)
+
+[node name="CrystalRightGlow" type="Polygon2D" parent="."]
+position = Vector2(480, 140)
+color = Color(0.5, 0.35, 0.9, 0.05)
+polygon = PackedVector2Array(0, -22, 9, -6, 9, 6, 0, 22, -9, 6, -9, -6)
+
+[node name="CrystalTop" type="Polygon2D" parent="."]
+position = Vector2(-350, -160)
+color = Color(0.35, 0.25, 0.75, 0.12)
+polygon = PackedVector2Array(0, -12, 5, -3, 5, 3, 0, 12, -5, 3, -5, -3)
+
+; === KILL ZONES ===
+
+[node name="KillZoneBottom" type="Area2D" parent="."]
+position = Vector2(0, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZoneBottom"]
+shape = SubResource("kill_h")
+
+[node name="KillZoneTop" type="Area2D" parent="."]
+position = Vector2(0, -600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZoneTop"]
+shape = SubResource("kill_h")
+
+[node name="KillZoneLeft" type="Area2D" parent="."]
+position = Vector2(-900, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZoneLeft"]
+shape = SubResource("kill_v")
+
+[node name="KillZoneRight" type="Area2D" parent="."]
+position = Vector2(900, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZoneRight"]
+shape = SubResource("kill_v")
+
+; === SPAWN & CAMERA ===
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(-150, 160)
+
+[node name="SpawnPointNPC" type="Marker2D" parent="."]
+position = Vector2(150, 160)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, 50)
+
+; === HUD ===
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="P1DamageLabel" type="Label" parent="HUD"]
+offset_left = 40.0
+offset_top = 640.0
+offset_right = 280.0
+offset_bottom = 700.0
+theme_override_colors/font_color = Color(0.3, 0.5, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 32
+text = "P1  0%"
+
+[node name="CPUDamageLabel" type="Label" parent="HUD"]
+offset_left = 1000.0
+offset_top = 640.0
+offset_right = 1240.0
+offset_bottom = 700.0
+theme_override_colors/font_color = Color(0.9, 0.4, 0.15, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 2
+text = "CPU  0%"
+
+[connection signal="body_entered" from="KillZoneBottom" to="." method="on_kill_zone_entered"]
+[connection signal="body_entered" from="KillZoneTop" to="." method="on_kill_zone_entered"]
+[connection signal="body_entered" from="KillZoneLeft" to="." method="on_kill_zone_entered"]
+[connection signal="body_entered" from="KillZoneRight" to="." method="on_kill_zone_entered"]

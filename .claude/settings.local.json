@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"^extends|class_name\" \"C:\\\\Users\\\\adria\\\\Documents\\\\TopDownRPG\\\\scripts\"/*.gd)",
+      "Bash(ls /c/Users/adria/Documents/TopDownRPG/scripts/*.gd)"
+    ]
+  }
+}

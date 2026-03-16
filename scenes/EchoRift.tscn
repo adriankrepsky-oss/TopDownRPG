@@ -1,0 +1,124 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/Room.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/RunPortal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Slime.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/BoundaryOverlay.tscn" id="4"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(700, 40)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(40, 1030)
+
+[node name="EchoRift" type="Node2D"]
+script = ExtResource("1")
+room_id = "echo_rift"
+room_name = "Echo Rift"
+navigation_hint = "Zero gravity changes your drift. Clear the rift slimes, then claim the void core."
+
+[node name="VoidBackdrop" type="Polygon2D" parent="."]
+z_index = -4
+color = Color(0.03, 0.04, 0.1, 1)
+polygon = PackedVector2Array(-760, -620, 760, -620, 760, 620, -760, 620)
+
+[node name="NebulaA" type="Polygon2D" parent="."]
+z_index = -3
+position = Vector2(-160, -120)
+color = Color(0.38, 0.46, 0.92, 0.24)
+polygon = PackedVector2Array(-260, -160, -120, -210, 80, -190, 220, -120, 250, 20, 180, 160, 20, 220, -150, 180, -250, 70)
+
+[node name="NebulaB" type="Polygon2D" parent="."]
+z_index = -3
+position = Vector2(190, 110)
+color = Color(0.78, 0.34, 0.96, 0.18)
+polygon = PackedVector2Array(-220, -120, -80, -170, 70, -150, 180, -70, 220, 40, 170, 150, 20, 210, -130, 170, -230, 60)
+
+[node name="CoreGlow" type="Polygon2D" parent="."]
+z_index = -2
+position = Vector2(0, -180)
+color = Color(0.8, 0.94, 1, 0.16)
+polygon = PackedVector2Array(0, -120, 80, -70, 118, 0, 80, 74, 0, 128, -80, 74, -118, 0, -80, -70)
+
+[node name="BoundaryOverlay" parent="." instance=ExtResource("4")]
+outer_extent = Vector2(700, 560)
+inner_extent = Vector2(638, 508)
+bottom_gap_width = 180.0
+bottom_gap_offset = 0.0
+fill_color = Color(0.01, 0.01, 0.03, 0.84)
+line_color = Color(0.16, 0.18, 0.28, 0.92)
+
+[node name="PortalBack" parent="." instance=ExtResource("2")]
+position = Vector2(0, 478)
+static_target_room_id = "echo_cave"
+static_target_spawn_id = "spawn_from_rift"
+label_override = "Back To Cave"
+portal_color = Color(0.62, 0.84, 1, 1)
+glow_color = Color(0.62, 0.84, 1, 0.22)
+
+[node name="SlimeA" parent="." instance=ExtResource("3")]
+position = Vector2(-210, 90)
+max_hp = 3
+move_speed = 92.0
+detection_radius = 280.0
+saved_enemy_id = "enemy_echo_rift_slime_a_defeated"
+coin_reward = 2
+
+[node name="SlimeB" parent="." instance=ExtResource("3")]
+position = Vector2(210, 40)
+max_hp = 3
+move_speed = 92.0
+detection_radius = 280.0
+saved_enemy_id = "enemy_echo_rift_slime_b_defeated"
+coin_reward = 2
+
+[node name="SlimeC" parent="." instance=ExtResource("3")]
+position = Vector2(0, 196)
+max_hp = 4
+move_speed = 98.0
+detection_radius = 300.0
+saved_enemy_id = "enemy_echo_rift_slime_c_defeated"
+coin_reward = 3
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="spawn_from_cave" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(0, 360)
+
+[node name="Colliders" type="Node2D" parent="."]
+
+[node name="NorthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-350, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallLeft"]
+shape = SubResource("1")
+
+[node name="NorthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(350, -515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/NorthWallRight"]
+shape = SubResource("1")
+
+[node name="SouthWallLeft" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-260, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallLeft"]
+shape = SubResource("1")
+
+[node name="SouthWallRight" type="StaticBody2D" parent="Colliders"]
+position = Vector2(260, 515)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/SouthWallRight"]
+shape = SubResource("1")
+
+[node name="WestWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(-638, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/WestWall"]
+shape = SubResource("2")
+
+[node name="EastWall" type="StaticBody2D" parent="Colliders"]
+position = Vector2(638, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colliders/EastWall"]
+shape = SubResource("2")

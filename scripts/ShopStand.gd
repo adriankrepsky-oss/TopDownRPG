@@ -46,6 +46,13 @@ func interact(_player: Node) -> void:
 func _complete_purchase() -> void:
 	if unique_purchase and not sold_out_flag.is_empty() and GameState.get_flag(sold_out_flag):
 		return
+	if not item_id.is_empty():
+		var add_check := GameState.can_add_item(item_id, item_amount)
+		if not bool(add_check.get("ok", false)):
+			var current_scene_full = get_tree().current_scene
+			if current_scene_full != null and current_scene_full.has_method("show_status_message"):
+				current_scene_full.show_status_message(str(add_check.get("reason", "Backpack is full.")))
+			return
 	if not GameState.spend_coins(cost):
 		return
 
