@@ -119,12 +119,13 @@ var stats_style_points: int = 0
 var is_revenge_match: bool = false
 var revenge_btn: Button
 
-# ─── BEST OF 3 ───
-var bo3_round: int = 0  # current round (0, 1, 2)
-var bo3_player_wins: int = 0
-var bo3_cpu_wins: int = 0
-var bo3_label: Label
-const BO3_TROPHY_MULT := 1.5
+# ─── SOLO BATTLE ROYALE ───
+var solo_fighters: Array = []  # all 9 AI fighters
+var solo_alive_count: int = 10  # including player
+var solo_placement: int = 0  # final placement (1 = winner)
+var solo_alive_label: Label
+const SOLO_PLAYER_COUNT := 10
+const SOLO_TROPHY_MULT := 2.0
 
 # ─── VICTORY TAUNTS ───
 var taunt_label: Label
@@ -158,8 +159,8 @@ func _ready() -> void:
 	is_revenge_match = GameState.get_meta("_revenge_next_match", false) == true
 	if is_revenge_match:
 		GameState.set_meta("_revenge_next_match", false)
-	if _is_bo3_mode():
-		_create_bo3_hud()
+	if _is_solo_mode():
+		_create_solo_hud()
 	_start_countdown()
 
 
@@ -230,6 +231,8 @@ func _process(_delta: float) -> void:
 		if is_instance_valid(enemy2) and enemy2_damage_label:
 			enemy2_damage_label.text = "EN2  %d%%" % int(enemy2.damage_percent)
 		cpu_damage_label.visible = false
+	elif _is_solo_mode():
+		cpu_damage_label.text = "%d ALIVE" % solo_alive_count
 	else:
 		if is_instance_valid(npc):
 			cpu_damage_label.text = "CPU  %d%%" % int(npc.damage_percent)
@@ -254,6 +257,8 @@ func _process(_delta: float) -> void:
 	if score_label and _is_scoring_mode():
 		if _is_2v2_mode():
 			score_label.text = "%d  -  %d" % [team_score, enemy_score]
+		elif _is_solo_mode():
+			score_label.text = "%d ALIVE" % solo_alive_count
 		else:
 			score_label.text = "%d  -  %d" % [p1_score, cpu_score]
 
@@ -337,6 +342,8 @@ func _spawn_fighters() -> void:
 
 	if _is_2v2_mode():
 		_spawn_2v2_fighters(weapon)
+	elif _is_solo_mode():
+		_spawn_solo_fighters(weapon)
 	else:
 		_spawn_1v1_npc(weapon)
 
@@ -348,7 +355,7 @@ func _spawn_1v1_npc(weapon: String) -> void:
 	npc.team_id = 1
 	if GameState.fighter_game_mode == "practice":
 		npc.practice_mode = true
-	if _is_normal_mode() or _is_bo3_mode():
+	if _is_normal_mode():
 		npc.trophy_count = _get_scaled_trophies(weapon)
 	add_child(npc)
 	npc.global_position = spawn_point_npc.global_position
@@ -428,11 +435,11 @@ func _is_2v2_mode() -> bool:
 	return GameState.fighter_game_mode == "2v2"
 
 
-func _is_bo3_mode() -> bool:
-	return GameState.fighter_game_mode == "bo3"
+func _is_solo_mode() -> bool:
+	return GameState.fighter_game_mode == "solo"
 
 func _is_scoring_mode() -> bool:
-	return GameState.fighter_game_mode == "normal" or GameState.fighter_game_mode == "2v2" or GameState.fighter_game_mode == "bo3"
+	return GameState.fighter_game_mode == "normal" or GameState.fighter_game_mode == "2v2" or GameState.fighter_game_mode == "solo"
 
 
 func _create_charge_label() -> void:
@@ -785,7 +792,9 @@ func on_kill_zone_entered(body: Node2D) -> void:
 
 	if _is_2v2_mode():
 		_on_kill_zone_2v2(body)
-	elif _is_normal_mode() or _is_bo3_mode():
+	elif _is_solo_mode():
+		_on_kill_zone_solo(body)
+	elif _is_normal_mode():
 		if body == player:
 			cpu_score += 1
 			if not _check_match_end():
@@ -833,8 +842,6 @@ func _on_kill_zone_2v2(body: Node2D) -> void:
 
 
 func _check_match_end() -> bool:
-	if _is_bo3_mode():
-		return _check_bo3_round_end()
 	if p1_score >= KILLS_TO_WIN:
 		_end_match(true)
 		return true
@@ -842,40 +849,6 @@ func _check_match_end() -> bool:
 		_end_match(false)
 		return true
 	return false
-
-
-func _check_bo3_round_end() -> bool:
-	# Each round is first to 3 kills, then check if someone has 2 round wins
-	if p1_score >= KILLS_TO_WIN:
-		bo3_player_wins += 1
-		if bo3_player_wins >= 2:
-			_end_match(true)
-			return true
-		_start_new_bo3_round()
-		return true
-	elif cpu_score >= KILLS_TO_WIN:
-		bo3_cpu_wins += 1
-		if bo3_cpu_wins >= 2:
-			_end_match(false)
-			return true
-		_start_new_bo3_round()
-		return true
-	return false
-
-
-func _start_new_bo3_round() -> void:
-	bo3_round += 1
-	p1_score = 0
-	cpu_score = 0
-	_update_bo3_hud()
-	# Flash round info
-	if countdown_label:
-		countdown_label.text = "ROUND %d" % (bo3_round + 1)
-		countdown_label.add_theme_font_size_override("font_size", 48)
-		countdown_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
-	screen_shake(6.0, 0.3)
-	_respawn_both()
-	_start_countdown()
 
 
 func _check_match_end_2v2() -> bool:
@@ -921,9 +894,9 @@ func _end_match(player_won: bool) -> void:
 		var mult: float = GameState.get_streak_multiplier()
 		trophy_change = int(ceil(float(trophy_reward) * mult))
 		coin_change = 5
-		# Bo3 gives 1.5x trophies
-		if _is_bo3_mode():
-			trophy_change = int(ceil(float(trophy_change) * BO3_TROPHY_MULT))
+		# Solo gives 2x trophies
+		if _is_solo_mode():
+			trophy_change = int(ceil(float(trophy_change) * SOLO_TROPHY_MULT))
 		# First win of the day = double trophies
 		if GameState.check_first_win_of_day():
 			trophy_change *= 2
@@ -971,14 +944,24 @@ func _end_match(player_won: bool) -> void:
 	result_panel.visible = true
 
 	if player_won:
-		result_label.text = "TEAM WINS!" if _is_2v2_mode() else "YOU WIN!"
+		if _is_solo_mode():
+			result_label.text = "#1 VICTORY ROYALE!"
+		elif _is_2v2_mode():
+			result_label.text = "TEAM WINS!"
+		else:
+			result_label.text = "YOU WIN!"
 		result_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
 		result_trophy_label.text = "+%d Trophies%s%s  (%s: %d)" % [trophy_change, streak_bonus, first_win_bonus, str(WEAPON_NAMES.get(wid, wid)), weapon_total]
 		# Show streak info
 		if GameState.fighter_win_streak >= 2 and result_hint_label:
 			result_hint_label.text = "Win Streak: %d  |  R to rematch · ESC for lobby" % GameState.fighter_win_streak
 	else:
-		result_label.text = "TEAM LOSES" if _is_2v2_mode() else "YOU LOSE"
+		if _is_solo_mode():
+			result_label.text = "#%d - ELIMINATED" % solo_placement
+		elif _is_2v2_mode():
+			result_label.text = "TEAM LOSES"
+		else:
+			result_label.text = "YOU LOSE"
 		result_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
 		if trophy_change < 0:
 			result_trophy_label.text = "%d Trophies  (%s: %d)" % [trophy_change, str(WEAPON_NAMES.get(wid, wid)), weapon_total]
@@ -1049,6 +1032,10 @@ func _ensure_mouse(action_name: String, button: MouseButton) -> void:
 func screen_shake(intensity: float, duration: float) -> void:
 	_shake_intensity = intensity
 	_shake_timer = duration
+	# Vibrate on mobile if enabled
+	if GameState.vibration_enabled and DisplayServer.is_touchscreen_available():
+		var vib_ms := int(clampf(duration * 100.0, 20.0, 200.0))
+		Input.vibrate_handheld(vib_ms)
 
 
 # ============================================================
@@ -1208,25 +1195,127 @@ func _on_revenge_pressed() -> void:
 
 
 # ============================================================
-# BEST OF 3
+# SOLO BATTLE ROYALE (10 players, last standing wins)
 # ============================================================
 
-func _create_bo3_hud() -> void:
-	bo3_label = Label.new()
-	bo3_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bo3_label.offset_left = 490
-	bo3_label.offset_top = 75
-	bo3_label.offset_right = 790
-	bo3_label.offset_bottom = 95
-	bo3_label.add_theme_font_size_override("font_size", 14)
-	bo3_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.7))
-	bo3_label.text = "Round 1  |  YOU 0 - 0 CPU"
-	$HUD.add_child(bo3_label)
+func _spawn_solo_fighters(_weapon: String) -> void:
+	var scaled := _get_scaled_trophies(_weapon)
+	# Spread 10 fighters across the arena
+	var arena_left := spawn_point.global_position.x - 200
+	var arena_right := spawn_point_npc.global_position.x + 200
+	var arena_width := arena_right - arena_left
+	var spacing := arena_width / float(SOLO_PLAYER_COUNT)
+
+	# Player is already spawned, place them at slot 0
+	player.global_position.x = arena_left + spacing * 0.5
+
+	# Spawn 9 AI fighters
+	for i in range(SOLO_PLAYER_COUNT - 1):
+		var ai := AI_FIGHTER_SCENE.instantiate()
+		ai.weapon_id = ALL_WEAPONS[randi() % ALL_WEAPONS.size()]
+		ai.team_id = i + 1  # each AI on its own team
+		ai.trophy_count = scaled + randi_range(-50, 50)
+		add_child(ai)
+		ai.global_position = Vector2(
+			arena_left + spacing * (i + 1.5),
+			spawn_point.global_position.y
+		)
+		# Each AI targets the player initially, will retarget dynamically
+		ai.opponent = player
+		solo_fighters.append(ai)
+
+	# Set player's initial opponent to nearest AI
+	if solo_fighters.size() > 0:
+		player.opponent = solo_fighters[0]
+	solo_alive_count = SOLO_PLAYER_COUNT
 
 
-func _update_bo3_hud() -> void:
-	if bo3_label:
-		bo3_label.text = "Round %d  |  YOU %d - %d CPU" % [bo3_round + 1, bo3_player_wins, bo3_cpu_wins]
+func _on_kill_zone_solo(body: Node2D) -> void:
+	if body == player:
+		# Player eliminated
+		solo_placement = solo_alive_count
+		_end_match(false)
+		return
+
+	# An AI was eliminated
+	if body in solo_fighters:
+		solo_alive_count -= 1
+		_update_solo_hud()
+		GameState.advance_daily_challenges("kill", 1)
+		if is_instance_valid(player) and player.has_method("on_ko_scored"):
+			player.on_ko_scored()
+
+		# Remove from fight - don't respawn, just hide
+		body.set_physics_process(false)
+		body.set_process(false)
+		body.visible = false
+		body.global_position = Vector2(-9999, -9999)
+
+		# Retarget remaining AIs
+		_solo_retarget()
+
+		# Check win condition - last standing
+		if solo_alive_count <= 1:
+			solo_placement = 1
+			_end_match(true)
+			return
+
+		screen_shake(5.0, 0.2)
+		# Flash elimination count
+		if countdown_label:
+			countdown_label.text = "%d ALIVE" % solo_alive_count
+			countdown_label.add_theme_font_size_override("font_size", 36)
+			countdown_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+			var tw := create_tween()
+			tw.tween_property(countdown_label, "modulate:a", 0.0, 1.0).set_delay(0.5)
+
+
+func _solo_retarget() -> void:
+	# Get list of alive AIs
+	var alive_ais: Array = []
+	for ai in solo_fighters:
+		if is_instance_valid(ai) and ai.visible:
+			alive_ais.append(ai)
+
+	# Assign random opponents among alive fighters (including player)
+	var all_alive: Array = alive_ais.duplicate()
+	if is_instance_valid(player):
+		all_alive.append(player)
+
+	for ai in alive_ais:
+		# Pick a random target that isn't itself
+		var targets := all_alive.filter(func(f): return f != ai)
+		if targets.size() > 0:
+			ai.opponent = targets[randi() % targets.size()]
+
+	# Update player's opponent to nearest alive AI
+	if is_instance_valid(player) and alive_ais.size() > 0:
+		var nearest: Node2D = alive_ais[0]
+		var nearest_dist: float = player.global_position.distance_to(nearest.global_position)
+		for ai in alive_ais:
+			var dist := player.global_position.distance_to(ai.global_position)
+			if dist < nearest_dist:
+				nearest = ai
+				nearest_dist = dist
+		player.opponent = nearest
+
+
+func _create_solo_hud() -> void:
+	solo_alive_label = Label.new()
+	solo_alive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	solo_alive_label.offset_left = 490
+	solo_alive_label.offset_top = 75
+	solo_alive_label.offset_right = 790
+	solo_alive_label.offset_bottom = 95
+	solo_alive_label.add_theme_font_size_override("font_size", 16)
+	solo_alive_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.8))
+	solo_alive_label.text = "%d ALIVE" % SOLO_PLAYER_COUNT
+	$HUD.add_child(solo_alive_label)
+
+
+func _update_solo_hud() -> void:
+	if solo_alive_label:
+		solo_alive_label.text = "%d ALIVE" % solo_alive_count
 
 
 # ============================================================

@@ -66,12 +66,12 @@ const WEAPON_HINTS := {
 	"crystal_spear": "LMB thrust · RMB impale",
 }
 
-const MODE_ORDER := ["normal", "2v2", "bo3", "practice"]
-const MODE_NAMES := {"normal": "Normal", "2v2": "2v2 Teams", "bo3": "Best of 3", "practice": "Practice"}
+const MODE_ORDER := ["normal", "2v2", "solo", "practice"]
+const MODE_NAMES := {"normal": "Normal", "2v2": "2v2 Teams", "solo": "Solo Royale", "practice": "Practice"}
 const MODE_DESCRIPTIONS := {
 	"normal": "First to 3 kills · Win = +10 trophies · +5 coins",
 	"2v2": "You + ally vs 2 enemies · First to 5 · trophies + coins",
-	"bo3": "Best of 3 rounds · Win 2 to win · 1.5x trophy reward",
+	"solo": "10 players · Last standing wins · 2x trophy reward",
 	"practice": "NPC stands still · no trophies",
 }
 
@@ -2293,6 +2293,31 @@ func _build_settings_contents() -> void:
 	reset_touch.pressed.connect(_reset_touch)
 	settings_popup.add_child(reset_touch)
 
+	# --- VIBRATION SECTION ---
+	var vib_y := touch_y + 50.0
+	var vib_section := Label.new()
+	vib_section.offset_left = 340; vib_section.offset_top = vib_y; vib_section.offset_right = 940; vib_section.offset_bottom = vib_y + 22
+	vib_section.add_theme_font_size_override("font_size", 18)
+	vib_section.add_theme_color_override("font_color", Color(0.5, 0.7, 1.0))
+	vib_section.text = "VIBRATION"
+	settings_popup.add_child(vib_section)
+
+	vib_y += 30.0
+	var vib_lbl := Label.new()
+	vib_lbl.offset_left = 360; vib_lbl.offset_top = vib_y; vib_lbl.offset_right = 560; vib_lbl.offset_bottom = vib_y + 26
+	vib_lbl.add_theme_font_size_override("font_size", 15)
+	vib_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.9))
+	vib_lbl.text = "Vibration: %s" % ("ON" if GameState.vibration_enabled else "OFF")
+	settings_popup.add_child(vib_lbl)
+
+	var vib_btn := Button.new()
+	vib_btn.offset_left = 580; vib_btn.offset_top = vib_y; vib_btn.offset_right = 780; vib_btn.offset_bottom = vib_y + 26
+	vib_btn.add_theme_font_size_override("font_size", 14)
+	vib_btn.text = "ON" if GameState.vibration_enabled else "OFF"
+	vib_btn.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4) if GameState.vibration_enabled else Color(1.0, 0.4, 0.3))
+	vib_btn.pressed.connect(_toggle_vibration)
+	settings_popup.add_child(vib_btn)
+
 	# ESC hint
 	var esc := Label.new()
 	esc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -2333,6 +2358,12 @@ func _reset_all_keys() -> void:
 
 func _adjust_touch_scale(delta: float) -> void:
 	GameState.set_touch_scale(GameState.touch_button_scale + delta)
+	_build_settings_contents()
+
+
+func _toggle_vibration() -> void:
+	GameState.vibration_enabled = not GameState.vibration_enabled
+	GameState.save_fighter_trophies()
 	_build_settings_contents()
 
 

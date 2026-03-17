@@ -29,6 +29,9 @@ var fighter_weapon_levels: Dictionary = {}  # weapon_id -> int (1-11)
 # --- Key Bindings ---
 var fighter_key_bindings: Dictionary = {}  # action -> keycode (int)
 
+# --- Vibration ---
+var vibration_enabled: bool = true
+
 # --- Touch Control Settings ---
 var touch_button_scale: float = 1.0  # 0.5 to 2.0
 var touch_joystick_x: float = 120.0
@@ -1276,6 +1279,7 @@ func save_fighter_trophies() -> void:
 			"season_peak_trophies": season_peak_trophies,
 			"season_rewards_claimed": season_rewards_claimed,
 			"unlocked_achievements": unlocked_achievements,
+			"vibration_enabled": vibration_enabled,
 		}))
 
 
@@ -1385,6 +1389,8 @@ func load_fighter_trophies() -> void:
 		season_rewards_claimed = bool(parsed.get("season_rewards_claimed", false))
 		# Achievements
 		unlocked_achievements = _load_string_array(parsed.get("unlocked_achievements", []))
+		# Vibration
+		vibration_enabled = bool(parsed.get("vibration_enabled", true))
 
 
 func _load_int_array(value: Variant) -> Array[int]:
