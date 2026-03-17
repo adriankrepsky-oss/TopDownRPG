@@ -4,7 +4,7 @@ const FIGHTER_SCENE := preload("res://scenes/fighter/Fighter.tscn")
 const AI_FIGHTER_SCENE := preload("res://scenes/fighter/AIFighter.tscn")
 const TOUCH_CONTROLS_SCENE := preload("res://scenes/fighter/TouchControls.tscn")
 
-const ALL_WEAPONS := ["fists", "shadow_blade", "kunai_stars", "frost_staff", "vine_whip", "iron_buckler", "dragon_gauntlets", "spirit_bow", "warp_dagger", "thunder_claws", "poison_fang", "fire_greatsword", "thors_hammer", "blood_scythe", "bomb_flail", "gravity_orb", "plasma_cannon", "crystal_spear"]
+const ALL_WEAPONS := ["fists", "shadow_blade", "kunai_stars", "frost_staff", "vine_whip", "iron_buckler", "dragon_gauntlets", "spirit_bow", "warp_dagger", "thunder_claws", "poison_fang", "fire_greatsword", "thors_hammer", "blood_scythe", "bomb_flail", "gravity_orb", "plasma_cannon", "crystal_spear", "minato_kunai"]
 const WEAPON_NAMES := {
 	"fists": "Fists",
 	"shadow_blade": "Shadow Blade",
@@ -24,6 +24,7 @@ const WEAPON_NAMES := {
 	"gravity_orb": "Gravity Orb",
 	"plasma_cannon": "Plasma Cannon",
 	"crystal_spear": "Crystal Spear",
+	"minato_kunai": "Minato Kunai",
 }
 
 const KILLS_TO_WIN := 3
@@ -161,6 +162,9 @@ func _ready() -> void:
 		GameState.set_meta("_revenge_next_match", false)
 	if _is_solo_mode():
 		_create_solo_hud()
+	# Show weapon tutorial on first use
+	if _should_show_weapon_tutorial():
+		_show_weapon_tutorial()
 	_start_countdown()
 
 
@@ -1192,6 +1196,98 @@ func _create_revenge_button() -> void:
 func _on_revenge_pressed() -> void:
 	GameState.set_meta("_revenge_next_match", true)
 	get_tree().reload_current_scene()
+
+
+# ============================================================
+# WEAPON TUTORIAL (first-time popup)
+# ============================================================
+
+const WEAPON_TUTORIALS := {
+	"minato_kunai": [
+		"MINATO KUNAI - Yellow Flash",
+		"",
+		"LIGHT ATTACK (LMB): Throw a kunai",
+		"  Fast projectile that marks your target",
+		"",
+		"HEAVY ATTACK (RMB): Teleport Strike",
+		"  Blink forward and strike at destination",
+		"  Use to close distance instantly",
+		"",
+		"SUPER (on opponent's head): RASENGAN",
+		"  Teleport behind enemy + massive spiral burst",
+		"  Devastating close-range finisher",
+		"",
+		"TIP: Throw kunai then blink for combos!",
+		"Your speed is the fastest in the game (1.2x)",
+	],
+}
+
+func _should_show_weapon_tutorial() -> bool:
+	var wid: String = GameState.fighter_weapon_id
+	if wid not in WEAPON_TUTORIALS:
+		return false
+	var seen_key := "tutorial_seen_%s" % wid
+	return not GameState.get_meta(seen_key, false)
+
+
+func _show_weapon_tutorial() -> void:
+	var wid: String = GameState.fighter_weapon_id
+	var lines: Array = WEAPON_TUTORIALS.get(wid, [])
+	if lines.is_empty():
+		return
+	# Mark as seen
+	GameState.set_meta("tutorial_seen_%s" % wid, true)
+
+	# Create tutorial overlay
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.88)
+	overlay.offset_left = 0; overlay.offset_top = 0
+	overlay.offset_right = 1280; overlay.offset_bottom = 720
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	$HUD.add_child(overlay)
+
+	var y_pos := 120.0
+	# Title
+	var title_lbl := Label.new()
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_lbl.offset_left = 290; title_lbl.offset_top = y_pos; title_lbl.offset_right = 990; title_lbl.offset_bottom = y_pos + 40
+	title_lbl.add_theme_font_size_override("font_size", 28)
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	title_lbl.text = str(lines[0]) if lines.size() > 0 else "TUTORIAL"
+	overlay.add_child(title_lbl)
+	y_pos += 50.0
+
+	# Tutorial lines
+	for i in range(1, lines.size()):
+		var line_lbl := Label.new()
+		line_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		line_lbl.offset_left = 290; line_lbl.offset_top = y_pos; line_lbl.offset_right = 990; line_lbl.offset_bottom = y_pos + 24
+		line_lbl.add_theme_font_size_override("font_size", 16)
+		var line_text: String = str(lines[i])
+		if line_text.begins_with("LIGHT") or line_text.begins_with("HEAVY") or line_text.begins_with("SUPER") or line_text.begins_with("TIP"):
+			line_lbl.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0))
+		else:
+			line_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.9, 0.9))
+		line_lbl.text = line_text
+		overlay.add_child(line_lbl)
+		y_pos += 26.0
+
+	# Close hint
+	var close_lbl := Label.new()
+	close_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	close_lbl.offset_left = 290; close_lbl.offset_top = 620; close_lbl.offset_right = 990; close_lbl.offset_bottom = 650
+	close_lbl.add_theme_font_size_override("font_size", 18)
+	close_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.5))
+	close_lbl.text = "Click or press any key to start"
+	overlay.add_child(close_lbl)
+
+	# Close on any input
+	overlay.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed:
+			overlay.queue_free()
+		elif event is InputEventKey and event.pressed:
+			overlay.queue_free()
+	)
 
 
 # ============================================================

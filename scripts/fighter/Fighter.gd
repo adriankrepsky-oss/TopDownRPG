@@ -254,6 +254,18 @@ const WEAPONS := {
 		"impale_range": 180.0,
 		"speed_multiplier": 1.05, "charge_speed_mult": 1.0,
 	},
+	"minato_kunai": {
+		"charge_capable": false,
+		"primary_damage": 9.0, "primary_knockback": 200.0,
+		"primary_cooldown": 0.3, "primary_duration": 0.1,
+		"secondary_damage": 18.0, "secondary_knockback": 400.0,
+		"secondary_cooldown": 1.0, "secondary_duration": 0.15,
+		"secondary_type": "blink",
+		"blink_distance": 150.0,
+		"projectile_speed": 700.0, "projectile_range": 450.0,
+		"slow_duration": 0.0, "slow_amount": 1.0,
+		"speed_multiplier": 1.2, "charge_speed_mult": 1.0,
+	},
 }
 
 # --- Shared combat constants ---
@@ -284,6 +296,7 @@ const SUPER_STATS := {
 	"blood_scythe": {"damage": 65.0, "knockback": 1700.0, "cooldown": 1.0, "heal_percent": 0.4},
 	"gravity_orb": {"damage": 68.0, "knockback": 2000.0, "cooldown": 1.0},
 	"crystal_spear": {"damage": 75.0, "knockback": 2200.0, "cooldown": 1.0},
+	"minato_kunai": {"damage": 55.0, "knockback": 1600.0, "cooldown": 0.9, "rasengan_radius": 70.0},
 }
 
 # --- Platform positions (for AI navigation) ---
@@ -697,7 +710,7 @@ func _handle_simple_weapon(wpn: Dictionary) -> void:
 	var wants_heavy := _get_heavy_input()
 
 	if wants_light and light_cooldown <= 0.0:
-		if weapon_id in ["frost_staff", "plasma_cannon", "kunai_stars", "spirit_bow", "gravity_orb"]:
+		if weapon_id in ["frost_staff", "plasma_cannon", "kunai_stars", "spirit_bow", "gravity_orb", "minato_kunai"]:
 			_fire_projectile(wpn)
 			light_cooldown = wpn["primary_cooldown"]
 		else:
@@ -815,6 +828,8 @@ func _execute_super_attack() -> void:
 			_super_gravity_orb(stats)
 		"crystal_spear":
 			_super_crystal_spear(stats)
+		"minato_kunai":
+			_super_minato_kunai(stats)
 		_:
 			_super_fists(stats)
 	_doing_super = false
@@ -1278,6 +1293,77 @@ func _super_crystal_spear(stats: Dictionary) -> void:
 		tw.parallel().tween_property(shard, "modulate:a", 0.0, 0.35)
 		tw.tween_callback(shard.queue_free)
 	_anim_attack_swing()
+
+
+# --- MINATO KUNAI SUPER: Rasengan (teleport behind opponent + massive spiral burst) ---
+func _super_minato_kunai(stats: Dictionary) -> void:
+	var rage_mult := 1.5 if rage_active else 1.0
+	if not is_instance_valid(opponent) or not opponent.has_method("take_hit"):
+		_anim_attack_swing()
+		return
+	var parent := get_parent()
+	if parent == null:
+		return
+	# Teleport behind opponent (yellow flash)
+	var opp_face: float = -1.0 if opponent.facing_right else 1.0
+	var old_pos := global_position
+	global_position = opponent.global_position + Vector2(opp_face * 30.0, 0.0)
+	facing_right = opp_face < 0.0
+	# Yellow flash VFX at old and new position
+	_spawn_minato_flash(old_pos)
+	_spawn_minato_flash(global_position)
+	# Rasengan spiral VFX
+	var rasengan_radius: float = stats.get("rasengan_radius", 70.0)
+	_spawn_rasengan_vfx(opponent.global_position, rasengan_radius)
+	# Deal massive damage
+	var face_dir := 1.0 if facing_right else -1.0
+	var kb_dir := Vector2(face_dir, -0.4).normalized()
+	opponent.take_hit(stats["damage"] * super_damage_mult * rage_mult, kb_dir, stats["knockback"] * super_kb_mult * rage_mult)
+	_spawn_super_burst(opponent.global_position)
+	_anim_attack_swing()
+
+
+func _spawn_minato_flash(pos: Vector2) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	# Yellow flash circle
+	var flash := Polygon2D.new()
+	var pts := PackedVector2Array()
+	for i in range(12):
+		var angle := float(i) / 12.0 * TAU
+		pts.append(Vector2(cos(angle), sin(angle)) * 15.0)
+	flash.polygon = pts
+	flash.color = Color(1.0, 0.9, 0.2, 0.8)
+	flash.global_position = pos
+	parent.add_child(flash)
+	var tw := _safe_create_tween()
+	tw.tween_property(flash, "scale", Vector2(3.0, 3.0), 0.2)
+	tw.parallel().tween_property(flash, "modulate:a", 0.0, 0.25)
+	tw.tween_callback(flash.queue_free)
+
+
+func _spawn_rasengan_vfx(pos: Vector2, radius: float) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	# Spinning blue energy sphere
+	for ring_i in range(3):
+		var ring := Polygon2D.new()
+		var ring_pts := PackedVector2Array()
+		var r := radius * (0.4 + ring_i * 0.3)
+		for i in range(16):
+			var angle := float(i) / 16.0 * TAU + ring_i * 0.5
+			ring_pts.append(Vector2(cos(angle), sin(angle)) * r)
+		ring.polygon = ring_pts
+		ring.color = Color(0.3, 0.6, 1.0, 0.5 - ring_i * 0.12)
+		ring.global_position = pos
+		parent.add_child(ring)
+		var tw := _safe_create_tween()
+		tw.tween_property(ring, "rotation", TAU * (2 - ring_i), 0.4)
+		tw.parallel().tween_property(ring, "scale", Vector2(1.5, 1.5), 0.4)
+		tw.parallel().tween_property(ring, "modulate:a", 0.0, 0.45)
+		tw.tween_callback(ring.queue_free)
 
 
 func _execute_dash(wpn: Dictionary) -> void:
@@ -2153,6 +2239,8 @@ func _apply_body_skin(skin_id: String) -> void:
 			_apply_iron_man_skin()
 		"god":
 			_apply_god_skin()
+		"manito":
+			_apply_manito_skin()
 
 
 func _set_poly_points(node_path: String, points: PackedVector2Array) -> void:
@@ -3208,6 +3296,65 @@ func _apply_god_skin() -> void:
 	_set_poly_color("ShoulderRightAccent", Color(1.0, 0.95, 0.5, 0.8))
 	_set_poly_color("BootLeftAccent", Color(1.0, 0.9, 0.4, 0.7))
 	_set_poly_color("BootRightAccent", Color(1.0, 0.9, 0.4, 0.7))
+
+
+func _apply_manito_skin() -> void:
+	# === MANITO: Yellow Flash — Hokage coat, blonde spiky hair, headband, whisker marks ===
+
+	# Yellow Hokage coat
+	_set_poly_color("CoatBack", Color(0.95, 0.82, 0.15))
+	_set_poly_color("CoatTailLeft", Color(0.9, 0.78, 0.12))
+	_set_poly_color("CoatTailRight", Color(0.9, 0.78, 0.12))
+	_set_poly_color("TorsoBase", Color(0.1, 0.12, 0.22))
+	_set_poly_color("JacketLapelLeft", Color(0.95, 0.85, 0.18))
+	_set_poly_color("JacketLapelRight", Color(0.95, 0.85, 0.18))
+	# Skin tone face
+	_set_poly_color("HeadBase", Color(0.92, 0.8, 0.68))
+	_set_poly_color("Neck", Color(0.88, 0.76, 0.64))
+	# Blue eyes
+	_set_poly_color("EyeWhiteLeft", Color(0.95, 0.95, 1.0))
+	_set_poly_color("EyeWhiteRight", Color(0.95, 0.95, 1.0))
+	_set_poly_color("IrisLeft", Color(0.2, 0.5, 0.95))
+	_set_poly_color("IrisRight", Color(0.2, 0.5, 0.95))
+	_set_poly_color("PupilLeft", Color(0.05, 0.1, 0.3))
+	_set_poly_color("PupilRight", Color(0.05, 0.1, 0.3))
+	_set_poly_color("Mouth", Color(0.82, 0.68, 0.55))
+	# Blonde spiky hair
+	_set_poly_color("HairBack", Color(0.95, 0.85, 0.15))
+	_set_poly_color("HairSpikeTopLeft", Color(0.95, 0.82, 0.12))
+	_set_poly_color("HairSpikeTop", Color(1.0, 0.9, 0.2))
+	_set_poly_color("HairSpikeTopRight", Color(0.95, 0.82, 0.12))
+	_set_poly_color("HairSpikeSideLeft", Color(0.9, 0.78, 0.1))
+	_set_poly_color("HairSpikeSideRight", Color(0.9, 0.78, 0.1))
+	_set_poly_color("HairFringe", Color(0.95, 0.85, 0.18))
+	_set_poly_color("HairHighlight1", Color(1.0, 0.95, 0.5, 0.6))
+	_set_poly_color("HairHighlight2", Color(1.0, 0.92, 0.45, 0.5))
+	# Tall spiky Minato-style hair
+	_set_poly_points("HairSpikeTop", PackedVector2Array([
+		Vector2(-2, -4), Vector2(-1, -12), Vector2(0, -26), Vector2(1, -12), Vector2(2, -4)]))
+	_set_poly_points("HairSpikeTopLeft", PackedVector2Array([
+		Vector2(-1, -2), Vector2(-4, -8), Vector2(-8, -20), Vector2(-5, -6), Vector2(-2, -2)]))
+	_set_poly_points("HairSpikeTopRight", PackedVector2Array([
+		Vector2(2, -2), Vector2(5, -6), Vector2(8, -20), Vector2(4, -8), Vector2(1, -2)]))
+	_set_poly_points("HairSpikeSideLeft", PackedVector2Array([
+		Vector2(-8, 2), Vector2(-11, -3), Vector2(-13, -10), Vector2(-9, -1), Vector2(-8, 0)]))
+	_set_poly_points("HairSpikeSideRight", PackedVector2Array([
+		Vector2(8, 0), Vector2(9, -1), Vector2(13, -10), Vector2(11, -3), Vector2(8, 2)]))
+	_set_poly_color("BrowLeft", Color(0.85, 0.75, 0.15))
+	_set_poly_color("BrowRight", Color(0.85, 0.75, 0.15))
+	# Dark blue headband scarf
+	_set_poly_color("ScarfTrail", Color(0.12, 0.12, 0.3))
+	_set_poly_color("ScarfTrailTip", Color(0.15, 0.15, 0.35))
+	_set_poly_color("ScarfFront", Color(0.15, 0.15, 0.32))
+	_set_poly_color("ScarfKnot", Color(0.5, 0.55, 0.65))  # Metal plate
+	# Emblem — Leaf village symbol
+	_set_poly_color("Emblem", Color(0.9, 0.3, 0.1, 0.9))
+	_set_poly_color("EmblemInner", Color(1.0, 0.5, 0.2, 0.7))
+	# Dark pants and sandals
+	_set_poly_color("ShoulderLeftAccent", Color(0.95, 0.85, 0.2, 0.6))
+	_set_poly_color("ShoulderRightAccent", Color(0.95, 0.85, 0.2, 0.6))
+	_set_poly_color("BootLeftAccent", Color(0.12, 0.12, 0.2))
+	_set_poly_color("BootRightAccent", Color(0.12, 0.12, 0.2))
 
 
 # --- Physics helpers ---

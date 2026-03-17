@@ -179,6 +179,7 @@ const WEAPON_COSTS := {
 	"gravity_orb": 375,
 	"plasma_cannon": 400,
 	"crystal_spear": 450,
+	"minato_kunai": 500,
 }
 
 const WEAPON_RARITIES := {
@@ -200,6 +201,7 @@ const WEAPON_RARITIES := {
 	"gravity_orb": "legendary",
 	"plasma_cannon": "legendary",
 	"crystal_spear": "legendary",
+	"minato_kunai": "legendary",
 }
 
 const RARITY_NAMES := {
@@ -350,8 +352,9 @@ const BODY_SKINS := {
 	"batman": {"name": "Dark Knight", "cost": 0},
 	"iron_man": {"name": "Iron Hero", "cost": 0},
 	"god": {"name": "God", "cost": 0},
+	"manito": {"name": "Manito", "cost": 100},
 }
-const BODY_SKIN_ORDER := ["default", "panda", "darth_bader", "ninja", "robot", "cat", "shark", "frog", "pikachu", "goku", "joker", "hulk", "spiderman", "batman", "iron_man", "god"]
+const BODY_SKIN_ORDER := ["default", "panda", "darth_bader", "ninja", "robot", "cat", "shark", "frog", "pikachu", "goku", "joker", "hulk", "spiderman", "batman", "iron_man", "god", "manito"]
 
 const REWARD_ICONS := {"coins": "C", "gems": "G", "power_ups": "P"}
 const REWARD_COLORS := {

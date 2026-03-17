@@ -3,7 +3,7 @@ extends Node2D
 const FIGHTER_SCENE := preload("res://scenes/fighter/Fighter.tscn")
 
 # Display order in the popup (sorted by unlock cost: easiest -> hardest)
-const POPUP_ORDER := ["fists", "shadow_blade", "kunai_stars", "frost_staff", "vine_whip", "iron_buckler", "dragon_gauntlets", "spirit_bow", "warp_dagger", "thunder_claws", "poison_fang", "fire_greatsword", "thors_hammer", "blood_scythe", "bomb_flail", "gravity_orb", "plasma_cannon", "crystal_spear"]
+const POPUP_ORDER := ["fists", "shadow_blade", "kunai_stars", "frost_staff", "vine_whip", "iron_buckler", "dragon_gauntlets", "spirit_bow", "warp_dagger", "thunder_claws", "poison_fang", "fire_greatsword", "thors_hammer", "blood_scythe", "bomb_flail", "gravity_orb", "plasma_cannon", "crystal_spear", "minato_kunai"]
 
 const WEAPON_NAMES := {
 	"fists": "Fists",
@@ -24,6 +24,7 @@ const WEAPON_NAMES := {
 	"gravity_orb": "Gravity Orb",
 	"plasma_cannon": "Plasma Cannon",
 	"crystal_spear": "Crystal Spear",
+	"minato_kunai": "Minato Kunai",
 }
 const WEAPON_COLORS := {
 	"fists": Color(0.3, 0.55, 1.0),
@@ -44,6 +45,7 @@ const WEAPON_COLORS := {
 	"gravity_orb": Color(0.4, 0.1, 0.6),
 	"plasma_cannon": Color(0.2, 0.9, 1.0),
 	"crystal_spear": Color(0.5, 0.7, 1.0),
+	"minato_kunai": Color(1.0, 0.85, 0.2),
 }
 const WEAPON_HINTS := {
 	"fists": "LMB light · RMB heavy",
@@ -64,6 +66,7 @@ const WEAPON_HINTS := {
 	"gravity_orb": "LMB bolt · RMB gravity pull",
 	"plasma_cannon": "LMB plasma bolt · RMB laser beam",
 	"crystal_spear": "LMB thrust · RMB impale",
+	"minato_kunai": "LMB kunai throw · RMB teleport · Super: Rasengan",
 }
 
 const MODE_ORDER := ["normal", "2v2", "solo", "practice"]
@@ -1675,6 +1678,46 @@ func _draw_body_skin_preview(c: Control, skin_id: String, a: float) -> void:
 			_draw_ninja_body_preview(c, cx, cy, a)
 		"robot":
 			_draw_robot_body_preview(c, cx, cy, a)
+		"manito":
+			_draw_manito_body_preview(c, cx, cy, a)
+
+
+func _draw_manito_body_preview(c: Control, cx: float, cy: float, a: float) -> void:
+	var coat_col := Color(0.95, 0.85, 0.2, a)  # Yellow Hokage coat
+	var inner_col := Color(0.1, 0.12, 0.2, a)  # Dark inner
+	var skin_col := Color(0.92, 0.8, 0.68, a)
+	var hair_col := Color(0.95, 0.85, 0.15, a)  # Blonde spiky hair
+	var iris_col := Color(0.2, 0.5, 0.95, a)    # Blue eyes
+	var band_col := Color(0.15, 0.15, 0.3, a)   # Headband
+	# Body (Hokage coat)
+	c.draw_rect(Rect2(cx - 12, cy - 8, 24, 28), coat_col)
+	c.draw_rect(Rect2(cx - 8, cy - 6, 16, 24), inner_col)
+	# Head
+	c.draw_rect(Rect2(cx - 9, cy - 26, 18, 20), skin_col)
+	# Spiky blonde hair (3 spikes)
+	c.draw_rect(Rect2(cx - 11, cy - 32, 22, 10), hair_col)
+	var spike1 := PackedVector2Array([Vector2(cx - 8, cy - 32), Vector2(cx - 5, cy - 44), Vector2(cx - 2, cy - 32)])
+	var spike2 := PackedVector2Array([Vector2(cx - 2, cy - 32), Vector2(cx + 1, cy - 46), Vector2(cx + 4, cy - 32)])
+	var spike3 := PackedVector2Array([Vector2(cx + 4, cy - 32), Vector2(cx + 7, cy - 42), Vector2(cx + 10, cy - 32)])
+	var spike_cols := PackedColorArray([hair_col, hair_col, hair_col])
+	c.draw_polygon(spike1, spike_cols)
+	c.draw_polygon(spike2, spike_cols)
+	c.draw_polygon(spike3, spike_cols)
+	# Headband
+	c.draw_rect(Rect2(cx - 10, cy - 22, 20, 4), band_col)
+	# Metal plate on headband
+	c.draw_rect(Rect2(cx - 4, cy - 23, 8, 5), Color(0.6, 0.65, 0.7, a))
+	# Blue eyes
+	c.draw_rect(Rect2(cx - 6, cy - 18, 4, 4), iris_col)
+	c.draw_rect(Rect2(cx + 2, cy - 18, 4, 4), iris_col)
+	# Whisker marks (3 lines on each cheek)
+	var whisker_col := Color(0.5, 0.4, 0.3, a * 0.5)
+	for i in range(3):
+		c.draw_line(Vector2(cx - 9, cy - 14 + i * 3), Vector2(cx - 5, cy - 14 + i * 3), whisker_col, 1.0)
+		c.draw_line(Vector2(cx + 5, cy - 14 + i * 3), Vector2(cx + 9, cy - 14 + i * 3), whisker_col, 1.0)
+	# Legs
+	c.draw_rect(Rect2(cx - 6, cy + 20, 5, 12), Color(0.12, 0.12, 0.2, a * 0.8))
+	c.draw_rect(Rect2(cx + 1, cy + 20, 5, 12), Color(0.12, 0.12, 0.2, a * 0.8))
 
 
 func _draw_default_body_preview(c: Control, cx: float, cy: float, a: float) -> void:
