@@ -131,12 +131,24 @@ jobs:
               sed -i 's/godot\./index./g' index.html
             fi
 
-            # Replace Godot template placeholders
+            # Replace ALL Godot template placeholders
             sed -i 's|\$GODOT_PROJECT_NAME|TopDownRPG|g' index.html
             sed -i 's|\$GODOT_HEAD_INCLUDE||g' index.html
             sed -i 's|\$GODOT_URL|index|g' index.html
             sed -i 's|\$GODOT_ARGS|[]|g' index.html
+            sed -i 's|\$GODOT_THREADS_ENABLED|false|g' index.html
+            sed -i 's|\$GODOT_SPLASH_COLOR|#000000|g' index.html
+            sed -i 's|\$GODOT_SPLASH||g' index.html
+            sed -i 's|\$GODOT_ENSURE_CROSS_ORIGIN_ISOLATION_HEADERS|false|g' index.html
+            sed -i 's|\$GODOT_CANVAS_RESIZE_POLICY|2|g' index.html
+            sed -i 's|\$GODOT_GDEXTENSION_LIBS|[]|g' index.html
+            sed -i 's|\$GODOT_EXECUTABLE|index|g' index.html
+            sed -i 's|\$GODOT_FOCUS_CANVAS|true|g' index.html
+            sed -i 's|\$GODOT_EXPERIMENTAL_VK|true|g' index.html
+            sed -i 's|\$GODOT_FILE_SIZES|{}|g' index.html
             sed -i 's|\$GODOT_CONFIG|{"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{},"focusCanvas":true,"gdextensionLibs":[]}|g' index.html
+            # Catch any remaining $GODOT_ placeholders
+            sed -i 's|\$GODOT_[A-Z_]*||g' index.html
 
             echo "Manual assembly complete"
           else
